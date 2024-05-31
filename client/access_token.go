@@ -95,7 +95,7 @@ func (c *Client) accessToken(force bool) (*tokenData, error) {
 	form.Set("client_id", c.clientID)
 	form.Set("refresh_token", c.refreshToken)
 
-	resp, err := c.httpClient.PostForm(idpURL.String(), form)
+	resp, err := c.retryClient.PostForm(idpURL.String(), form)
 	if err != nil {
 		return nil, fmt.Errorf("error requesting access token: %w", err)
 	}

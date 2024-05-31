@@ -3,13 +3,14 @@ package client
 import (
 	"errors"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
 
 	"github.com/hashicorp/go-cleanhttp"
+	"github.com/hashicorp/go-retryablehttp"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 )
 
 type Config struct {
@@ -50,7 +51,8 @@ type Client struct {
 	clientID     string
 	refreshToken string
 
-	httpClient *http.Client
+	httpClient  *http.Client
+	retryClient *retryablehttp.Client
 }
 
 func New(opts *Config) (*Client, error) {
@@ -89,6 +91,7 @@ func New(opts *Config) (*Client, error) {
 		tokenStore:   tokenStore,
 		refreshToken: opts.RefreshToken,
 		httpClient:   cleanhttp.DefaultClient(),
+		retryClient:  retryablehttp.NewClient(),
 	}, nil
 }
 
