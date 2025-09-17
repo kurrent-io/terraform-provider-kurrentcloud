@@ -13,7 +13,14 @@ echo "Creating backup of provider.go..."
 cp "$PROVIDER_FILE" "$BACKUP_FILE"
 
 echo "Temporarily commenting out kurrentcloud resources..."
-sed -i '' 's/^[[:space:]]*"kurrentcloud_/\/\/ "kurrentcloud_/g' "$PROVIDER_FILE"
+# Use portable sed approach that works on both macOS and Linux
+if sed --version >/dev/null 2>&1; then
+    # GNU sed (Linux)
+    sed -i 's/^[[:space:]]*"kurrentcloud_/\/\/ "kurrentcloud_/g' "$PROVIDER_FILE"
+else
+    # BSD sed (macOS)
+    sed -i '' 's/^[[:space:]]*"kurrentcloud_/\/\/ "kurrentcloud_/g' "$PROVIDER_FILE"
+fi
 
 # Function to restore provider.go on exit
 cleanup() {
