@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
-	"github.com/EventStore/terraform-provider-eventstorecloud/client"
+	"github.com/kurrent-io/terraform-provider-kurrentcloud/client"
 )
 
 func resourceIntegration() *schema.Resource {
@@ -18,7 +18,8 @@ func resourceIntegration() *schema.Resource {
 		DeleteContext: resourceIntegrationDelete,
 		UpdateContext: resourceIntegrationUpdate,
 
-		Description: "Manages integration resources, for example Slack or OpsGenie.",
+		Description:        "Manages integration resources, for example Slack or OpsGenie.",
+		DeprecationMessage: "Use kurrentcloud_integration instead. eventstorecloud_integration will be removed in v3.0.0",
 
 		Importer: &schema.ResourceImporter{
 			StateContext: resourceImport,

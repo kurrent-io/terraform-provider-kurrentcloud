@@ -6,12 +6,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
-	"github.com/EventStore/terraform-provider-eventstorecloud/client"
+	"github.com/kurrent-io/terraform-provider-kurrentcloud/client"
 )
 
 func resourceAcl() *schema.Resource {
 	return &schema.Resource{
-		Description: "Manages IP Access Lists",
+		Description:        "Manages IP Access Lists",
+		DeprecationMessage: "Use kurrentcloud_acl instead. eventstorecloud_acl will be removed in v3.0.0",
 
 		CreateContext: resourceAclCreate,
 		ReadContext:   resourceAclRead,
@@ -88,7 +89,11 @@ func interfaceToCid(value interface{}) []client.AclCidrBlock {
 	return result
 }
 
-func resourceAclCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAclCreate(
+	ctx context.Context,
+	d *schema.ResourceData,
+	meta interface{},
+) diag.Diagnostics {
 	c := meta.(*providerContext)
 
 	projectId := d.Get("project_id").(string)
@@ -110,7 +115,11 @@ func resourceAclCreate(ctx context.Context, d *schema.ResourceData, meta interfa
 	return resourceAclRead(ctx, d, meta)
 }
 
-func resourceAclUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAclUpdate(
+	ctx context.Context,
+	d *schema.ResourceData,
+	meta interface{},
+) diag.Diagnostics {
 	c := meta.(*providerContext)
 
 	if d.HasChange("name") || d.HasChange("cidr_blocks") {
@@ -134,7 +143,11 @@ func resourceAclUpdate(ctx context.Context, d *schema.ResourceData, meta interfa
 	return resourceAclRead(ctx, d, meta)
 }
 
-func resourceAclRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAclRead(
+	ctx context.Context,
+	d *schema.ResourceData,
+	meta interface{},
+) diag.Diagnostics {
 	c := meta.(*providerContext)
 
 	var diags diag.Diagnostics
@@ -170,7 +183,11 @@ func resourceAclRead(ctx context.Context, d *schema.ResourceData, meta interface
 	return diags
 }
 
-func resourceAclDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAclDelete(
+	ctx context.Context,
+	d *schema.ResourceData,
+	meta interface{},
+) diag.Diagnostics {
 	c := meta.(*providerContext)
 
 	var diags diag.Diagnostics

@@ -1,26 +1,27 @@
 ---
 subcategory: ""
-page_title: "Provision Event Store Cloud resources in Azure"
+page_title: "Provision Kurrent Cloud resources in Azure"
 description: |-
-    A sample Terraform project to provision all the Event Store Cloud resources in Azure.
+  A sample Terraform project to provision all the Kurrent Cloud resources in Azure.
 ---
 
-# Event Store Cloud in Azure
+# Kurrent Cloud in Azure
 
-The sample project creates the following resources in Event Store Cloud:
+The sample project creates the following resources in Kurrent Cloud:
+
 - Project
 - Network
 - Network peering
-- Managed EventStoreDB using single F1 node with 16GB disk
+- Managed KurrentDB using single F1 node with 16GB disk
 
-From the Azure side, you still need to register the Event Store Cloud service account with the necessary permissions to create a network peering.
+From the Azure side, you still need to register the Kurrent Cloud service account with the necessary permissions to create a network peering.
 Read more in the provisioning [documentation](https://developers.eventstore.com/cloud/provision/azure/#network-peering).
 
 ```terraform
 terraform {
   required_providers {
-    eventstorecloud = {
-      source = "EventStore/eventstorecloud"
+    kurrentcloud = {
+      source = "kurrent-io/kurrentcloud"
     }
     azurerm = {
       source = "hashicorp/azurerm"
@@ -33,7 +34,7 @@ terraform {
 
 variable "eventstore_application_id" {
   type        = string
-  description = "Event Store Production Application ID with access to peering creation"
+  description = "Kurrent Cloud Production Application ID with access to peering creation"
   default     = "38bd60cb-6efa-49e8-a1cd-3b9f61d9435e"
 }
 
@@ -44,12 +45,12 @@ variable "azure_subscription_id" {
 
 variable "esc_token" {
   type        = string
-  description = "Event Store Cloud API token"
+  description = "Kurrent Cloud API token"
 }
 
 variable "esc_organization_id" {
   type        = string
-  description = "Event Store Cloud Organization ID"
+  description = "Kurrent Cloud Organization ID"
 }
 
 provider "azurerm" {
@@ -60,7 +61,7 @@ provider "azurerm" {
 
 provider "azuread" {}
 
-provider "eventstorecloud" {
+provider "kurrentcloud" {
   token           = var.esc_token
   organization_id = var.esc_organization_id
 }
@@ -76,7 +77,7 @@ resource "azurerm_resource_group" "chicken_window" {
   location = "West US2"
 }
 
-resource "eventstorecloud_project" "chicken_window" {
+resource "kurrentcloud_project" "chicken_window" {
   name = "Improved Chicken Window"
 }
 
@@ -87,10 +88,10 @@ resource "azurerm_virtual_network" "chicken_window" {
   location            = azurerm_resource_group.chicken_window.location
 }
 
-resource "eventstorecloud_network" "chicken_window" {
+resource "kurrentcloud_network" "chicken_window" {
   name = "Chicken Window Net"
 
-  project_id = eventstorecloud_project.chicken_window.id
+  project_id = kurrentcloud_project.chicken_window.id
 
   resource_provider = "azure"
   region            = azurerm_resource_group.chicken_window.location
@@ -99,7 +100,7 @@ resource "eventstorecloud_network" "chicken_window" {
 
 // Access to Event Store Application should be granted to create peering between Azure Virtual Networks
 resource "azuread_service_principal" "peering" {
-  application_id               = var.eventstore_application_id
+  application_id               = var.kurrentcloud_application_id
   app_role_assignment_required = false
 }
 
@@ -129,14 +130,14 @@ resource "azurerm_role_assignment" "chicken_window_peering" {
   principal_id         = azuread_service_principal.peering.id
 }
 
-resource "eventstorecloud_peering" "peering" {
+resource "kurrentcloud_peering" "peering" {
   name = "Example Peering"
 
-  project_id = eventstorecloud_network.chicken_window.project_id
-  network_id = eventstorecloud_network.chicken_window.id
+  project_id = kurrentcloud_network.chicken_window.project_id
+  network_id = kurrentcloud_network.chicken_window.id
 
-  peer_resource_provider = eventstorecloud_network.chicken_window.resource_provider
-  peer_network_region    = eventstorecloud_network.chicken_window.region
+  peer_resource_provider = kurrentcloud_network.chicken_window.resource_provider
+  peer_network_region    = kurrentcloud_network.chicken_window.region
 
   peer_account_id = data.azurerm_client_config.current.tenant_id
   peer_network_id = azurerm_virtual_network.chicken_window.id
@@ -147,11 +148,11 @@ resource "eventstorecloud_peering" "peering" {
   ]
 }
 
-resource "eventstorecloud_managed_cluster" "wings" {
+resource "kurrentcloud_managed_cluster" "wings" {
   name = "Wings Cluster"
 
-  project_id = eventstorecloud_network.chicken_window.project_id
-  network_id = eventstorecloud_network.chicken_window.id
+  project_id = kurrentcloud_network.chicken_window.project_id
+  network_id = kurrentcloud_network.chicken_window.id
 
   topology         = "three-node-multi-zone"
   instance_type    = "F1"
@@ -162,18 +163,18 @@ resource "eventstorecloud_managed_cluster" "wings" {
 }
 
 output "chicken_window_id" {
-  value = eventstorecloud_project.chicken_window.id
+  value = kurrentcloud_project.chicken_window.id
 }
 
 output "chicken_window_net" {
-  value = eventstorecloud_network.chicken_window
+  value = kurrentcloud_network.chicken_window
 }
 
 output "chicken_window_peering" {
-  value = eventstorecloud_peering.peering
+  value = kurrentcloud_peering.peering
 }
 
 output "wings_cluster_dns_name" {
-  value = eventstorecloud_managed_cluster.wings.dns_name
+  value = kurrentcloud_managed_cluster.wings.dns_name
 }
 ```

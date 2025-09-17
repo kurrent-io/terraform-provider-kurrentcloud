@@ -1,11 +1,11 @@
-resource "eventstorecloud_project" "example" {
+resource "kurrentcloud_project" "example" {
   name = "Example Project"
 }
 
-resource "eventstorecloud_network" "example" {
+resource "kurrentcloud_network" "example" {
   name = "Example Network"
 
-  project_id = eventstorecloud_project.example.id
+  project_id = kurrentcloud_project.example.id
 
   resource_provider = "aws"
   region            = "us-west-2"

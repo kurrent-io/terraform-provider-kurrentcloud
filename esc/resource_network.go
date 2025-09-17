@@ -9,12 +9,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 
-	"github.com/EventStore/terraform-provider-eventstorecloud/client"
+	"github.com/kurrent-io/terraform-provider-kurrentcloud/client"
 )
 
 func resourceNetwork() *schema.Resource {
 	return &schema.Resource{
-		Description: "Manages VPC (network) resources in Event Store Cloud",
+		Description:        "Manages VPC (network) resources in Kurrent Cloud",
+		DeprecationMessage: "Use kurrentcloud_network instead. eventstorecloud_network will be removed in v3.0.0",
 
 		CreateContext: resourceNetworkCreate,
 		ReadContext:   resourceNetworkRead,
@@ -97,10 +98,14 @@ func resourceNetworkCreate(
 	}
 
 	if request.PublicAccess && request.CidrBlock != "" {
-		return diag.Errorf("Error: network resources with \"public_access\" set to true can not set \"cidr_block\".")
+		return diag.Errorf(
+			"Error: network resources with \"public_access\" set to true can not set \"cidr_block\".",
+		)
 	}
 	if !request.PublicAccess && request.CidrBlock == "" {
-		return diag.Errorf("Error: network resources with \"public_access\" set to false must set \"cidr_block\".")
+		return diag.Errorf(
+			"Error: network resources with \"public_access\" set to false must set \"cidr_block\".",
+		)
 	}
 
 	resp, err := c.client.NetworkCreate(ctx, request)

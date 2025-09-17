@@ -10,12 +10,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 
-	"github.com/EventStore/terraform-provider-eventstorecloud/client"
+	"github.com/kurrent-io/terraform-provider-kurrentcloud/client"
 )
 
 func resourcePeering() *schema.Resource {
 	return &schema.Resource{
-		Description: "Manages peering connections between Event Store Cloud VPCs and customer own VPCs",
+		Description:        "Manages peering connections between Kurrent Cloud VPCs and customer own VPCs",
+		DeprecationMessage: "Use kurrentcloud_peering instead. eventstorecloud_peering will be removed in v3.0.0",
 
 		CreateContext: resourcePeeringCreate,
 		ReadContext:   resourcePeeringRead,

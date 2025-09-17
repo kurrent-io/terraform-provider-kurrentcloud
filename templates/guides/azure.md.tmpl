@@ -1,19 +1,19 @@
 ---
 subcategory: ""
-page_title: "Provision Event Store Cloud resources in Azure"
+page_title: "Provision Kurrent Cloud resources in Azure"
 description: |-
-    A sample Terraform project to provision all the Event Store Cloud resources in Azure.
+    A sample Terraform project to provision all the Kurrent Cloud resources in Azure.
 ---
 
-# Event Store Cloud in Azure
+# Kurrent Cloud in Azure
 
-The sample project creates the following resources in Event Store Cloud:
+The sample project creates the following resources in Kurrent Cloud:
 - Project
 - Network
 - Network peering
-- Managed EventStoreDB using single F1 node with 16GB disk
+- Managed KurrentDB using single F1 node with 16GB disk
 
-From the Azure side, you still need to register the Event Store Cloud service account with the necessary permissions to create a network peering.
+From the Azure side, you still need to register the Kurrent Cloud service account with the necessary permissions to create a network peering.
 Read more in the provisioning [documentation](https://developers.eventstore.com/cloud/provision/azure/#network-peering).
 
 {{ tffile "examples/azure/main.tf" }}

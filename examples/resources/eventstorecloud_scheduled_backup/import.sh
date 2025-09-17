@@ -1,1 +1,1 @@
-terraform import eventstorecloud_scheduled_backup.daily project_id:backup_id
+terraform import kurrentcloud_scheduled_backup.daily project_id:backup_id

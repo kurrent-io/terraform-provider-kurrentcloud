@@ -1,11 +1,11 @@
-# Developing `terraform-provider-eventstorecloud`
+# Developing `terraform-provider-kurrentcloud`
 
 Starting from Terraform v0.14 there is an [ability to override provider path](https://www.terraform.io/docs/cli/config/config-file.html#development-overrides-for-provider-developers) in development purposes:
 
 ```
 provider_installation {
   dev_overrides {
-    "EventStore/eventstorecloud" = "path/to/go/bin"
+    "kurrent-io/kurrentcloud" = "path/to/go/bin"
   }
   direct {}
 }

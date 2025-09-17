@@ -1,1 +1,1 @@
-terraform import eventstorecloud_network.example project_id:network_id
+terraform import kurrentcloud_network.example project_id:network_id

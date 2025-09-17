@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
-	"github.com/EventStore/terraform-provider-eventstorecloud/client"
+	"github.com/kurrent-io/terraform-provider-kurrentcloud/client"
 )
 
 var defaultTokenStore = filepath.Join(os.Getenv("HOME"), ".esctf", "tokens")
@@ -74,11 +74,27 @@ func New(version string) func() *schema.Provider {
 			},
 
 			DataSourcesMap: map[string]*schema.Resource{
+				"kurrentcloud_project": dataSourceProject(),
+				"kurrentcloud_network": dataSourceNetwork(),
+
+				// Deprecated names
 				"eventstorecloud_project": dataSourceProject(),
 				"eventstorecloud_network": dataSourceNetwork(),
 			},
 
 			ResourcesMap: map[string]*schema.Resource{
+				// New preferred names
+				"kurrentcloud_project":                           resourceProject(),
+				"kurrentcloud_acl":                               resourceAcl(),
+				"kurrentcloud_network":                           resourceNetwork(),
+				"kurrentcloud_peering":                           resourcePeering(),
+				"kurrentcloud_managed_cluster":                   resourceManagedCluster(),
+				"kurrentcloud_scheduled_backup":                  resourceScheduledBackup(),
+				"kurrentcloud_integration":                       resourceIntegration(),
+				"kurrentcloud_integration_awscloudwatch_logs":    resourceIntegrationAwsCloudWatchLogs(),
+				"kurrentcloud_integration_awscloudwatch_metrics": resourceIntegrationAwsCloudWatchMetrics(),
+
+				// Deprecated names
 				"eventstorecloud_project":                           resourceProject(),
 				"eventstorecloud_acl":                               resourceAcl(),
 				"eventstorecloud_network":                           resourceNetwork(),

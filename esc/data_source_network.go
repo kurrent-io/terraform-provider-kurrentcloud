@@ -6,12 +6,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
-	"github.com/EventStore/terraform-provider-eventstorecloud/client"
+	"github.com/kurrent-io/terraform-provider-kurrentcloud/client"
 )
 
 func dataSourceNetwork() *schema.Resource {
 	return &schema.Resource{
-		Description: "Retrieves data for an existing `Network` resource",
+		Description:        "Retrieves data for an existing `Network` resource",
+		DeprecationMessage: "Use kurrentcloud_network instead. eventstorecloud_network will be removed in v3.0.0",
+
 		ReadContext: dataSourceNetworkRead,
 		Schema: map[string]*schema.Schema{
 			"name": {

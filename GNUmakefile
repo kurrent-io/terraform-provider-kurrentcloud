@@ -8,17 +8,16 @@ build:  ## Builds the app
 
 .PHONY: generate
 generate:  ## Generates the docs
-	go generate
+	./scripts/generate-docs.sh
 
 .PHONY: fmt
 fmt:  ## Formats the codebase. If this doesn't work, run `tools` first
-	#!/usr/bin/env bash
-	goimports -w .
-	gofumpt -w .
-	golines --base-formatter '' -w .
+	PATH="$$(go env GOPATH)/bin:$$PATH" goimports -w .
+	PATH="$$(go env GOPATH)/bin:$$PATH" gofumpt -w .
+	PATH="$$(go env GOPATH)/bin:$$PATH" golines --base-formatter '' -w .
 
 .PHONY: tools
-tools:  ## Formats the codebase. If this doesn't work, run `tools` first
+tools:  ## Installs formatting tools
 	go install golang.org/x/tools/cmd/goimports@v0.1.11
 	go install github.com/segmentio/golines@v0.12.2
 	go install mvdan.cc/gofumpt@v0.6.0

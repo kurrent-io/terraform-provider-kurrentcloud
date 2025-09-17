@@ -1,4 +1,4 @@
-provider "eventstorecloud" {
+provider "kurrentcloud" {
   # optionally use ESC_TOKEN env var
   token = var.token
 

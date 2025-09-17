@@ -1,1 +1,1 @@
-terraform import eventstorecloud_peering.example project_id:peering_id
+terraform import kurrentcloud_peering.example project_id:peering_id

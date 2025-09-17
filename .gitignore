@@ -139,3 +139,4 @@ Temporary Items
 
 dist/
 terraform-provider-eventstorecloud
+terraform-provider-kurrentcloud

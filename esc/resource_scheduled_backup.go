@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
-	"github.com/EventStore/terraform-provider-eventstorecloud/client"
+	"github.com/kurrent-io/terraform-provider-kurrentcloud/client"
 )
 
 func resourceScheduledBackup() *schema.Resource {
@@ -16,7 +16,8 @@ func resourceScheduledBackup() *schema.Resource {
 		ReadContext:   resourceScheduledBackupRead,
 		DeleteContext: resourceScheduledBackupDelete,
 
-		Description: "Creates a new scheduled backup.",
+		Description:        "Creates a new scheduled backup.",
+		DeprecationMessage: "Use kurrentcloud_scheduled_backup instead. eventstorecloud_scheduled_backup will be removed in v3.0.0",
 
 		Importer: &schema.ResourceImporter{
 			StateContext: resourceImport,

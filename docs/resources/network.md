@@ -3,24 +3,24 @@
 page_title: "eventstorecloud_network Resource - terraform-provider-eventstorecloud"
 subcategory: ""
 description: |-
-  Manages VPC (network) resources in Event Store Cloud
+  Manages VPC (network) resources in Kurrent Cloud
 ---
 
 # eventstorecloud_network (Resource)
 
-Manages VPC (network) resources in Event Store Cloud
+Manages VPC (network) resources in Kurrent Cloud
 
 ## Example Usage
 
 ```terraform
-resource "eventstorecloud_project" "example" {
+resource "kurrentcloud_project" "example" {
   name = "Example Project"
 }
 
-resource "eventstorecloud_network" "example" {
+resource "kurrentcloud_network" "example" {
   name = "Example Network"
 
-  project_id = eventstorecloud_project.example.id
+  project_id = kurrentcloud_project.example.id
 
   resource_provider = "aws"
   region            = "us-west-2"

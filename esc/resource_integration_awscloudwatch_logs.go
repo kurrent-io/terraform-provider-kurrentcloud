@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
-	"github.com/EventStore/terraform-provider-eventstorecloud/client"
+	"github.com/kurrent-io/terraform-provider-kurrentcloud/client"
 )
 
 func resourceIntegrationAwsCloudWatchLogs() *schema.Resource {
@@ -21,7 +21,7 @@ func resourceIntegrationAwsCloudWatchLogs() *schema.Resource {
 		Description: `Manages integrations for AwsCloudWatch logs.
 
 **NOTE**: This functionality is currently in beta. To access it please contact support.`,
-
+		DeprecationMessage: "Use kurrentcloud_integration_awscloudwatch_logs instead. eventstorecloud_integration_awscloudwatch_logs will be removed in v3.0.0",
 		Importer: &schema.ResourceImporter{
 			StateContext: resourceImport,
 		},

@@ -3,17 +3,17 @@
 page_title: "eventstorecloud_project Resource - terraform-provider-eventstorecloud"
 subcategory: ""
 description: |-
-  Manages projects within an organization in Event Store Cloud
+  Manages projects within an organization in Kurrent Cloud
 ---
 
 # eventstorecloud_project (Resource)
 
-Manages projects within an organization in Event Store Cloud
+Manages projects within an organization in Kurrent Cloud
 
 ## Example Usage
 
 ```terraform
-resource "eventstorecloud_project" "chicken_window" {
+resource "kurrentcloud_project" "chicken_window" {
   name = "Improved Chicken Window"
 }
 ```
@@ -35,5 +35,5 @@ resource "eventstorecloud_project" "chicken_window" {
 Import is supported using the following syntax:
 
 ```shell
-terraform import eventstorecloud_project.chicken_window project_id
+terraform import eventstorecloud_project.example project_id
 ```

@@ -1,19 +1,19 @@
 ---
 subcategory: ""
-page_title: "Provision Event Store Cloud resources in GCP"
+page_title: "Provision Kurrent Cloud resources in GCP"
 description: |-
-    A sample Terraform project to provision all the Event Store Cloud resources in Google Cloud.
+  A sample Terraform project to provision all the Kurrent Cloud resources in Google Cloud.
 ---
 
-# Event Store Cloud in GCP
+# Kurrent Cloud in GCP
 
-The sample project creates the following resources in Event Store Cloud:
+The sample project creates the following resources in Kurrent Cloud:
 - Project
 - Network
 - Network peering
-- Managed EventStoreDB using single F1 node with 16GB disk
+- Managed KurrentDB using single F1 node with 16GB disk
 
-From the GCP side, you still need to create an incoming peering from your GCP account towards the Event Store Cloud VPC as described in the [documentation](https://developers.eventstore.com/cloud/provision/gcp/#network-peering).
+From the GCP side, you still need to create an incoming peering from your GCP account towards the Kurrent Cloud VPC as described in the [documentation](https://developers.eventstore.com/cloud/provision/gcp/#network-peering).
 This step can be also automated using the GCP Terraform provider.
 
 {{ tffile "examples/gcp/main.tf" }}

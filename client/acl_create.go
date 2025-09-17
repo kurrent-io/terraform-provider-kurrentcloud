@@ -26,16 +26,32 @@ type CreateAclResponse struct {
 	AclID string `json:"id"`
 }
 
-func (c *Client) AclCreate(ctx context.Context, req *CreateAclRequest) (*CreateAclResponse, diag.Diagnostics) {
+func (c *Client) AclCreate(
+	ctx context.Context,
+	req *CreateAclRequest,
+) (*CreateAclResponse, diag.Diagnostics) {
 	requestBody, err := json.Marshal(req)
 	if err != nil {
 		return nil, diag.Errorf("error marshalling request: %w", err)
 	}
 
 	requestURL := *c.apiURL
-	requestURL.Path = path.Join("infra", "v1", "organizations", req.OrganizationID, "projects", req.ProjectID, "acls")
+	requestURL.Path = path.Join(
+		"infra",
+		"v1",
+		"organizations",
+		req.OrganizationID,
+		"projects",
+		req.ProjectID,
+		"acls",
+	)
 
-	request, err := http.NewRequestWithContext(ctx, http.MethodPost, requestURL.String(), bytes.NewReader(requestBody))
+	request, err := http.NewRequestWithContext(
+		ctx,
+		http.MethodPost,
+		requestURL.String(),
+		bytes.NewReader(requestBody),
+	)
 	if err != nil {
 		return nil, diag.Errorf("error constructing request: %w", err)
 	}

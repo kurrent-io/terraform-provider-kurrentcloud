@@ -1,1 +1,1 @@
-terraform import eventstorecloud_integration.opsgenie_issues project_id:integration_id
+terraform import kurrentcloud_integration.opsgenie_issues project_id:integration_id

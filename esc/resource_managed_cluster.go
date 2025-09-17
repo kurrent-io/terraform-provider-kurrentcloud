@@ -9,12 +9,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 
-	"github.com/EventStore/terraform-provider-eventstorecloud/client"
+	"github.com/kurrent-io/terraform-provider-kurrentcloud/client"
 )
 
 func resourceManagedCluster() *schema.Resource {
 	return &schema.Resource{
-		Description: "Manages EventStoreDB instances and clusters in Event Store Cloud",
+		Description:        "Manages KurrentDB instances and clusters in Kurrent Cloud",
+		DeprecationMessage: "Use kurrentcloud_managed_cluster instead. eventstorecloud_managed_cluster will be removed in v3.0.0",
 
 		CreateContext: resourceManagedClusterCreate,
 		ReadContext:   resourceManagedClusterRead,
@@ -234,11 +235,14 @@ func resourceManagedClusterCreate(
 	}
 
 	// Retrieve initial credentials after cluster is available
-	credentialsResp, credErr := c.client.ManagedClusterGetInitialCredentials(ctx, &client.GetManagedClusterInitialCredentialsRequest{
-		OrganizationID: c.organizationId,
-		ProjectID:      projectId,
-		ClusterID:      resp.ClusterID,
-	})
+	credentialsResp, credErr := c.client.ManagedClusterGetInitialCredentials(
+		ctx,
+		&client.GetManagedClusterInitialCredentialsRequest{
+			OrganizationID: c.organizationId,
+			ProjectID:      projectId,
+			ClusterID:      resp.ClusterID,
+		},
+	)
 
 	// Set credentials if successfully retrieved, but don't fail the resource creation if they're not available
 	if credErr == nil && credentialsResp != nil {
@@ -340,11 +344,14 @@ func resourceManagedClusterRead(
 	}
 
 	// Attempt to retrieve initial credentials, but don't fail if not available
-	credentialsResp, credErr := c.client.ManagedClusterGetInitialCredentials(ctx, &client.GetManagedClusterInitialCredentialsRequest{
-		OrganizationID: c.organizationId,
-		ProjectID:      projectId,
-		ClusterID:      clusterId,
-	})
+	credentialsResp, credErr := c.client.ManagedClusterGetInitialCredentials(
+		ctx,
+		&client.GetManagedClusterInitialCredentialsRequest{
+			OrganizationID: c.organizationId,
+			ProjectID:      projectId,
+			ClusterID:      clusterId,
+		},
+	)
 
 	// Only set credentials if successfully retrieved
 	if credErr == nil && credentialsResp != nil {
