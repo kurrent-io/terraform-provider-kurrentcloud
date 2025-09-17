@@ -138,5 +138,4 @@ Temporary Items
 .apdisk
 
 dist/
-terraform-provider-eventstorecloud
 terraform-provider-kurrentcloud

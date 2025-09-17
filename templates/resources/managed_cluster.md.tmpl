@@ -1,5 +1,5 @@
 ---
-page_title: "Resource eventstorecloud_managed_cluster - terraform-provider-eventstorecloud"
+page_title: "Resource kurrentcloud_managed_cluster - terraform-provider-kurrentcloud"
 subcategory: ""
 description: |-
   Manages KurrentDB instances and clusters in Kurrent Cloud
@@ -9,7 +9,7 @@ description: |-
 
 For example, the {{ .SchemaMarkdown }} template can be used to replace manual schema documentation if descriptions of schema attributes are added in the provider source code. */ -}}
 
-# Resource (eventstorecloud_managed_cluster)
+# Resource (kurrentcloud_managed_cluster)
 
 Manages KurrentDB instances and clusters in Kurrent Cloud
 
@@ -24,28 +24,28 @@ When a managed cluster is created, Kurrent Cloud generates initial credentials f
 ### Example: Outputting Credentials
 
 ```terraform
-resource "eventstorecloud_managed_cluster" "example" {
+resource "kurrentcloud_managed_cluster" "example" {
   # ... cluster configuration
 }
 
 # Output the admin password
 output "cluster_admin_password" {
   description = "Initial admin password for the Kurrent cluster"
-  value       = eventstorecloud_managed_cluster.example.initial_admin_password
+  value       = kurrentcloud_managed_cluster.example.initial_admin_password
   sensitive   = true
 }
 
 # Output the ops password  
 output "cluster_ops_password" {
   description = "Initial ops password for the Kurrent cluster"
-  value       = eventstorecloud_managed_cluster.example.initial_ops_password
+  value       = kurrentcloud_managed_cluster.example.initial_ops_password
   sensitive   = true
 }
 
 # Output the credentials generation timestamp
 output "credentials_generated_at" {
   description = "Timestamp when the initial credentials were generated"
-  value       = eventstorecloud_managed_cluster.example.credentials_generated_at
+  value       = kurrentcloud_managed_cluster.example.credentials_generated_at
 }
 ```
 
@@ -146,5 +146,5 @@ Use one of the following values as `topology`:
 Import is supported using the following syntax:
 
 ```shell
-terraform import eventstorecloud_managed_cluster.example project_id:cluster_id
+terraform import kurrentcloud_managed_cluster.example project_id:cluster_id
 ```

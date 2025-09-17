@@ -1,5 +1,5 @@
 ---
-page_title: "Resource eventstorecloud_peering - terraform-provider-eventstorecloud"
+page_title: "Resource kurrentcloud_peering - terraform-provider-kurrentcloud"
 subcategory: ""
 description: |-
   Manages peering connections between Event Store Cloud VPCs and customer own VPCs
@@ -9,7 +9,7 @@ description: |-
 
 For example, the {{ .SchemaMarkdown }} template can be used to replace manual schema documentation if descriptions of schema attributes are added in the provider source code. */ -}}
 
-# Resource (eventstorecloud_peering)
+# Resource (kurrentcloud_peering)
 
 Manages peering connections between Kurrent Cloud VPCs and customer own VPCs
 
@@ -52,7 +52,7 @@ The `provider_metadata` block supports:
 Import is supported using the following syntax:
 
 ```shell
-terraform import eventstorecloud_peering.example project_id:peering_id
+terraform import kurrentcloud_peering.example project_id:peering_id
 ```
 
 ~> Keep in mind that additional operations might be required to activate the peering link. Check our [provisioning guidelines](https://developers.eventstore.com/cloud/provision/) for each of the supported cloud providers to know more.
