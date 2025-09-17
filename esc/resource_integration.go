@@ -18,6 +18,42 @@ func resourceIntegration() *schema.Resource {
 		DeleteContext: resourceIntegrationDelete,
 		UpdateContext: resourceIntegrationUpdate,
 
+		Description: "Manages integration resources, for example Slack or OpsGenie.",
+
+		Importer: &schema.ResourceImporter{
+			StateContext: resourceImport,
+		},
+
+		Schema: map[string]*schema.Schema{
+			"description": {
+				Description: "Human readable description of the integration",
+				Required:    true,
+				ForceNew:    false,
+				Type:        schema.TypeString,
+			},
+			"project_id": {
+				Description: "ID of the project to which the integration applies",
+				Required:    true,
+				ForceNew:    true,
+				Type:        schema.TypeString,
+			},
+			"data": {
+				Description: "Data for the integration",
+				Required:    true,
+				ForceNew:    false,
+				Type:        schema.TypeMap,
+			},
+		},
+	}
+}
+
+func resourceEventstorecloudIntegration() *schema.Resource {
+	return &schema.Resource{
+		CreateContext: resourceIntegrationCreate,
+		ReadContext:   resourceIntegrationRead,
+		DeleteContext: resourceIntegrationDelete,
+		UpdateContext: resourceIntegrationUpdate,
+
 		Description:        "Manages integration resources, for example Slack or OpsGenie.",
 		DeprecationMessage: "Use kurrentcloud_integration instead. eventstorecloud_integration will be removed in v3.0.0",
 

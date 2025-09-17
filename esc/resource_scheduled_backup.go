@@ -15,6 +15,58 @@ func resourceScheduledBackup() *schema.Resource {
 		CreateContext: resourceScheduledBackupCreate,
 		ReadContext:   resourceScheduledBackupRead,
 		DeleteContext: resourceScheduledBackupDelete,
+		Description:   "Creates a new scheduled backup.",
+
+		Importer: &schema.ResourceImporter{
+			StateContext: resourceImport,
+		},
+
+		Schema: map[string]*schema.Schema{
+			"description": {
+				Description: "Human readable description of the job",
+				Required:    true,
+				ForceNew:    true,
+				Type:        schema.TypeString,
+			},
+			"project_id": {
+				Description: "ID of the project in which the backup exists",
+				Required:    true,
+				ForceNew:    true,
+				Type:        schema.TypeString,
+			},
+			"schedule": {
+				Description: "Schedule for the backup, defined using restricted subset of cron",
+				Required:    true,
+				ForceNew:    true,
+				Type:        schema.TypeString,
+			},
+			"source_cluster_id": {
+				Description: "the ID of the cluster to back up",
+				Required:    true,
+				ForceNew:    true,
+				Type:        schema.TypeString,
+			},
+			"backup_description": {
+				Description: "backup_description",
+				Required:    true,
+				ForceNew:    true,
+				Type:        schema.TypeString,
+			},
+			"max_backup_count": {
+				Description: "The maximum number of backups to keep for this job",
+				Required:    true,
+				ForceNew:    true,
+				Type:        schema.TypeInt,
+			},
+		},
+	}
+}
+
+func resourceEventstorecloudScheduledBackup() *schema.Resource {
+	return &schema.Resource{
+		CreateContext: resourceScheduledBackupCreate,
+		ReadContext:   resourceScheduledBackupRead,
+		DeleteContext: resourceScheduledBackupDelete,
 
 		Description:        "Creates a new scheduled backup.",
 		DeprecationMessage: "Use kurrentcloud_scheduled_backup instead. eventstorecloud_scheduled_backup will be removed in v3.0.0",

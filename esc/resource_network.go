@@ -14,6 +14,71 @@ import (
 
 func resourceNetwork() *schema.Resource {
 	return &schema.Resource{
+		Description: "Manages VPC (network) resources in Kurrent Cloud",
+
+		CreateContext: resourceNetworkCreate,
+		ReadContext:   resourceNetworkRead,
+		UpdateContext: resourceNetworkUpdate,
+		DeleteContext: resourceNetworkDelete,
+
+		Importer: &schema.ResourceImporter{
+			StateContext: resourceImport,
+		},
+
+		Schema: map[string]*schema.Schema{
+			"project_id": {
+				Description: "Project ID",
+				Required:    true,
+				ForceNew:    true,
+				Type:        schema.TypeString,
+			},
+			"resource_provider": {
+				Description: "Cloud Provider in which to provision the network.",
+				Required:    true,
+				ForceNew:    true,
+				Type:        schema.TypeString,
+				ValidateDiagFunc: ValidateWithByPass(
+					validation.ToDiagFunc(validation.StringInSlice(validProviders, true)),
+				),
+				StateFunc: func(val interface{}) string {
+					// Normalize to lower case
+					return strings.ToLower(val.(string))
+				},
+			},
+			"region": {
+				Description: "Provider region in which to provision the network",
+				Required:    true,
+				ForceNew:    true,
+				Type:        schema.TypeString,
+			},
+			"cidr_block": {
+				Description:  "Address space of the network in CIDR block notation",
+				Required:     false,
+				ForceNew:     true,
+				Default:      "",
+				Type:         schema.TypeString,
+				ValidateFunc: validation.IsCIDRNetwork(8, 24),
+				Optional:     true,
+			},
+			"name": {
+				Description: "Human-friendly name for the network",
+				Type:        schema.TypeString,
+				Required:    true,
+			},
+			"public_access": {
+				Description: "Whether the network is able to be accessed from the public internet",
+				Type:        schema.TypeBool,
+				Default:     false,
+				Required:    false,
+				ForceNew:    true,
+				Optional:    true,
+			},
+		},
+	}
+}
+
+func resourceEventstorecloudNetwork() *schema.Resource {
+	return &schema.Resource{
 		Description:        "Manages VPC (network) resources in Kurrent Cloud",
 		DeprecationMessage: "Use kurrentcloud_network instead. eventstorecloud_network will be removed in v3.0.0",
 

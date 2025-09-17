@@ -21,6 +21,74 @@ func resourceIntegrationAwsCloudWatchMetrics() *schema.Resource {
 		Description: `Manages integrations for AwsCloudWatch metrics.
 
 **NOTE**: This functionality is currently in beta. To access it please contact support.`,
+		Importer: &schema.ResourceImporter{
+			StateContext: resourceImport,
+		},
+
+		Schema: map[string]*schema.Schema{
+			"access_key_id": {
+				Description: "AWS IAM access key",
+				Required:    false,
+				ForceNew:    false,
+				Optional:    true,
+				Sensitive:   true,
+				Type:        schema.TypeString,
+			},
+			"cluster_ids": {
+				Description: "Clusters to be used with this integration",
+				Required:    true,
+				ForceNew:    false,
+				Type:        schema.TypeList,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
+			"description": {
+				Description: "Human readable description of the integration",
+				Required:    true,
+				ForceNew:    false,
+				Type:        schema.TypeString,
+			},
+			"namespace": {
+				Description: "Name of the CloudWatch namespace",
+				Required:    true,
+				ForceNew:    false,
+				Sensitive:   false,
+				Type:        schema.TypeString,
+			},
+			"project_id": {
+				Description: "ID of the project to which the integration applies",
+				Required:    true,
+				ForceNew:    true,
+				Type:        schema.TypeString,
+			},
+			"region": {
+				Description: "AWS region for group",
+				Required:    true,
+				ForceNew:    false,
+				Sensitive:   false,
+				Type:        schema.TypeString,
+			},
+			"secret_access_key": {
+				Description: "AWS IAM secret access key",
+				Required:    false,
+				ForceNew:    false,
+				Optional:    true,
+				Sensitive:   true,
+				Type:        schema.TypeString,
+			},
+		},
+	}
+}
+
+func resourceEventstorecloudIntegrationAwsCloudWatchMetrics() *schema.Resource {
+	return &schema.Resource{
+		CreateContext: resourceIntegrationAwsCloudWatchMetricsCreate,
+		ReadContext:   resourceIntegrationAwsCloudWatchMetricsRead,
+		DeleteContext: resourceIntegrationAwsCloudWatchMetricsDelete,
+		UpdateContext: resourceIntegrationAwsCloudWatchMetricsUpdate,
+
+		Description: `Manages integrations for AwsCloudWatch metrics.
+
+**NOTE**: This functionality is currently in beta. To access it please contact support.`,
 		DeprecationMessage: "Use kurrentcloud_integration_awscloudwatch_metrics instead. eventstorecloud_integration_awscloudwatch_metrics will be removed in v3.0.0",
 		Importer: &schema.ResourceImporter{
 			StateContext: resourceImport,

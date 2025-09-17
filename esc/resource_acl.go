@@ -11,6 +11,45 @@ import (
 
 func resourceAcl() *schema.Resource {
 	return &schema.Resource{
+		Description: "Manages IP Access Lists",
+
+		CreateContext: resourceAclCreate,
+		ReadContext:   resourceAclRead,
+		UpdateContext: resourceAclUpdate,
+		DeleteContext: resourceAclDelete,
+
+		Importer: &schema.ResourceImporter{
+			StateContext: resourceImport,
+		},
+
+		Schema: map[string]*schema.Schema{
+			"project_id": {
+				Description: "Project ID",
+				Required:    true,
+				ForceNew:    true,
+				Type:        schema.TypeString,
+			},
+			"cidr_blocks": {
+				Description: "CIDR blocks allowed by the IP access list",
+				Required:    true,
+				ForceNew:    false,
+				Type:        schema.TypeList,
+				Elem: &schema.Schema{
+					Type: schema.TypeMap,
+				},
+			},
+			"name": {
+				Description: "Human-friendly name for the Acl",
+				Type:        schema.TypeString,
+				Required:    true,
+			},
+		},
+	}
+}
+
+// Deprecated: Use kurrentcloud_acl instead. eventstorecloud_acl will be removed in v3.0.0
+func resourceEventstorecloudAcl() *schema.Resource {
+	return &schema.Resource{
 		Description:        "Manages IP Access Lists",
 		DeprecationMessage: "Use kurrentcloud_acl instead. eventstorecloud_acl will be removed in v3.0.0",
 

@@ -11,6 +11,29 @@ import (
 
 func resourceProject() *schema.Resource {
 	return &schema.Resource{
+		Description: "Manages projects within an organization in Kurrent Cloud",
+
+		CreateContext: resourceProjectCreate,
+		ReadContext:   resourceProjectRead,
+		UpdateContext: resourceProjectUpdate,
+		DeleteContext: resourceProjectDelete,
+
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
+
+		Schema: map[string]*schema.Schema{
+			"name": {
+				Description: "Human-friendly name for the project",
+				Type:        schema.TypeString,
+				Required:    true,
+			},
+		},
+	}
+}
+
+func resourceEventstorecloudProject() *schema.Resource {
+	return &schema.Resource{
 		Description:        "Manages projects within an organization in Kurrent Cloud",
 		DeprecationMessage: "Use kurrentcloud_project instead. eventstorecloud_project will be removed in v3.0.0",
 

@@ -11,6 +11,44 @@ import (
 
 func dataSourceNetwork() *schema.Resource {
 	return &schema.Resource{
+		Description: "Retrieves data for an existing `Network` resource",
+		ReadContext: dataSourceNetworkRead,
+		Schema: map[string]*schema.Schema{
+			"name": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"project_id": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"resource_provider": {
+				Description: "Cloud Provider in which to provision the network.",
+				Required:    false,
+				ForceNew:    false,
+				Computed:    true,
+				Type:        schema.TypeString,
+			},
+			"region": {
+				Description: "Provider region in which to provision the network",
+				Required:    false,
+				ForceNew:    false,
+				Computed:    true,
+				Type:        schema.TypeString,
+			},
+			"cidr_block": {
+				Description: "Address space of the network in CIDR block notation",
+				Required:    false,
+				ForceNew:    false,
+				Computed:    true,
+				Type:        schema.TypeString,
+			},
+		},
+	}
+}
+
+func dataSourceEventstorecloudNetwork() *schema.Resource {
+	return &schema.Resource{
 		Description:        "Retrieves data for an existing `Network` resource",
 		DeprecationMessage: "Use kurrentcloud_network instead. eventstorecloud_network will be removed in v3.0.0",
 

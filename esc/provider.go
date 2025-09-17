@@ -78,8 +78,8 @@ func New(version string) func() *schema.Provider {
 				"kurrentcloud_network": dataSourceNetwork(),
 
 				// Deprecated names
-				"eventstorecloud_project": dataSourceProject(),
-				"eventstorecloud_network": dataSourceNetwork(),
+				"eventstorecloud_project": dataSourceEventstorecloudProject(),
+				"eventstorecloud_network": dataSourceEventstorecloudNetwork(),
 			},
 
 			ResourcesMap: map[string]*schema.Resource{
@@ -95,15 +95,15 @@ func New(version string) func() *schema.Provider {
 				"kurrentcloud_integration_awscloudwatch_metrics": resourceIntegrationAwsCloudWatchMetrics(),
 
 				// Deprecated names
-				"eventstorecloud_project":                           resourceProject(),
-				"eventstorecloud_acl":                               resourceAcl(),
-				"eventstorecloud_network":                           resourceNetwork(),
-				"eventstorecloud_peering":                           resourcePeering(),
-				"eventstorecloud_managed_cluster":                   resourceManagedCluster(),
-				"eventstorecloud_scheduled_backup":                  resourceScheduledBackup(),
-				"eventstorecloud_integration":                       resourceIntegration(),
-				"eventstorecloud_integration_awscloudwatch_logs":    resourceIntegrationAwsCloudWatchLogs(),
-				"eventstorecloud_integration_awscloudwatch_metrics": resourceIntegrationAwsCloudWatchMetrics(),
+				"eventstorecloud_project":                           resourceEventstorecloudProject(),
+				"eventstorecloud_acl":                               resourceEventstorecloudAcl(),
+				"eventstorecloud_network":                           resourceEventstorecloudNetwork(),
+				"eventstorecloud_peering":                           resourceEventstorecloudPeering(),
+				"eventstorecloud_managed_cluster":                   resourceEventstorecloudManagedCluster(),
+				"eventstorecloud_scheduled_backup":                  resourceEventstorecloudScheduledBackup(),
+				"eventstorecloud_integration":                       resourceEventstorecloudIntegration(),
+				"eventstorecloud_integration_awscloudwatch_logs":    resourceEventstorecloudIntegrationAwsCloudWatchLogs(),
+				"eventstorecloud_integration_awscloudwatch_metrics": resourceEventstorecloudIntegrationAwsCloudWatchMetrics(),
 			},
 		}
 

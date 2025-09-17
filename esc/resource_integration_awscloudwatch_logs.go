@@ -21,6 +21,74 @@ func resourceIntegrationAwsCloudWatchLogs() *schema.Resource {
 		Description: `Manages integrations for AwsCloudWatch logs.
 
 **NOTE**: This functionality is currently in beta. To access it please contact support.`,
+		Importer: &schema.ResourceImporter{
+			StateContext: resourceImport,
+		},
+
+		Schema: map[string]*schema.Schema{
+			"access_key_id": {
+				Description: "The access key ID of IAM credentials which have permissions to create and write to the log group",
+				Required:    false,
+				ForceNew:    false,
+				Optional:    true,
+				Sensitive:   true,
+				Type:        schema.TypeString,
+			},
+			"cluster_ids": {
+				Description: "Clusters to be used with this integration",
+				Required:    true,
+				ForceNew:    false,
+				Type:        schema.TypeList,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
+			"description": {
+				Description: "Human readable description of the integration",
+				Required:    true,
+				ForceNew:    false,
+				Type:        schema.TypeString,
+			},
+			"group_name": {
+				Description: "Name of the CloudWatch group",
+				Required:    true,
+				ForceNew:    false,
+				Sensitive:   false,
+				Type:        schema.TypeString,
+			},
+			"project_id": {
+				Description: "ID of the project to which the integration applies",
+				Required:    true,
+				ForceNew:    true,
+				Type:        schema.TypeString,
+			},
+			"region": {
+				Description: "AWS region for group",
+				Required:    true,
+				ForceNew:    false,
+				Sensitive:   false,
+				Type:        schema.TypeString,
+			},
+			"secret_access_key": {
+				Description: "The secret access key of IAM credentials which will be used to write to the log groups",
+				Required:    false,
+				ForceNew:    false,
+				Optional:    true,
+				Sensitive:   true,
+				Type:        schema.TypeString,
+			},
+		},
+	}
+}
+
+func resourceEventstorecloudIntegrationAwsCloudWatchLogs() *schema.Resource {
+	return &schema.Resource{
+		CreateContext: resourceIntegrationAwsCloudWatchLogsCreate,
+		ReadContext:   resourceIntegrationAwsCloudWatchLogsRead,
+		DeleteContext: resourceIntegrationAwsCloudWatchLogsDelete,
+		UpdateContext: resourceIntegrationAwsCloudWatchLogsUpdate,
+
+		Description: `Manages integrations for AwsCloudWatch logs.
+
+**NOTE**: This functionality is currently in beta. To access it please contact support.`,
 		DeprecationMessage: "Use kurrentcloud_integration_awscloudwatch_logs instead. eventstorecloud_integration_awscloudwatch_logs will be removed in v3.0.0",
 		Importer: &schema.ResourceImporter{
 			StateContext: resourceImport,
