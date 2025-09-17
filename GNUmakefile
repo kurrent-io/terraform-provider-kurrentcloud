@@ -25,7 +25,7 @@ tools:  ## Installs formatting tools
 .PHONY: ci
 ci: ## Performs the same checks as ci
 	go build
-	go generate
+	./scripts/generate-docs.sh
 	go fmt
 	git diff --exit-code  || (echo 'missing commits - were generated docs checked in?' && exit 1)
 
