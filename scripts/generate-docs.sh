@@ -6,8 +6,8 @@
 
 set -e
 
-echo "Generating documentation with all resources..."
-go generate
+echo "Generating documentation for kurrentcloud resources only..."
+go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs generate --ignore-deprecated=true
 
 echo "Cleaning up eventstorecloud templates and documentation..."
 
