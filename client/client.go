@@ -89,7 +89,7 @@ func New(opts *Config) (*Client, error) {
 		clientID:     clientID,
 		tokenStore:   tokenStore,
 		refreshToken: opts.RefreshToken,
-		httpClient:   cleanhttp.DefaultClient(),
+		httpClient:   newHTTPClientWithUserAgent(cleanhttp.DefaultClient()),
 	}, nil
 }
 

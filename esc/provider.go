@@ -132,6 +132,11 @@ func configure(
 	p *schema.Provider,
 ) func(context.Context, *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	return func(_ context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
+		// Set Terraform version for telemetry from the provider instance
+		if p.TerraformVersion != "" {
+			client.TerraformVersion = p.TerraformVersion
+		}
+
 		config := &client.Config{
 			URL:                 d.Get("url").(string),
 			RefreshToken:        d.Get("token").(string),

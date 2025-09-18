@@ -5,6 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
 
+	"github.com/kurrent-io/terraform-provider-kurrentcloud/client"
 	"github.com/kurrent-io/terraform-provider-kurrentcloud/esc"
 )
 
@@ -30,6 +31,9 @@ func main() {
 		"set to true to run the provider with support for debuggers like delve",
 	)
 	flag.Parse()
+
+	// Set the version for telemetry purposes
+	client.Version = version
 
 	opts := &plugin.ServeOpts{ProviderFunc: esc.New(version), Debug: debugMode}
 

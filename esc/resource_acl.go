@@ -116,18 +116,6 @@ func translateCidrBlocksToTf(cidrBlocks []client.AclCidrBlock) []map[string]inte
 	return result
 }
 
-// In terraform when we read back values they will always be of type []interface{}
-// even if we passed a []map[string]interface{} originally. This takes []interface{} and builds
-// a []string by casting each element individually.
-func interfaceToCid(value interface{}) []client.AclCidrBlock {
-	list := value.([]interface{})
-	result := []client.AclCidrBlock{}
-	for _, element := range list {
-		result = append(result, element.(client.AclCidrBlock))
-	}
-	return result
-}
-
 func resourceAclCreate(
 	ctx context.Context,
 	d *schema.ResourceData,
