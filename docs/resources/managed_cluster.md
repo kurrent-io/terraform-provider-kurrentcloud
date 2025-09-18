@@ -1,38 +1,38 @@
 ---
-page_title: "Resource eventstorecloud_managed_cluster - terraform-provider-eventstorecloud"
+page_title: "Resource kurrentcloud_managed_cluster - terraform-provider-kurrentcloud"
 subcategory: ""
 description: |-
-  Manages EventStoreDB instances and clusters in Event Store Cloud
+  Manages KurrentDB instances and clusters in Kurrent Cloud
 ---
 
-# Resource (eventstorecloud_managed_cluster)
+# Resource (kurrentcloud_managed_cluster)
 
-Manages EventStoreDB instances and clusters in Event Store Cloud
+Manages KurrentDB instances and clusters in Kurrent Cloud
 
 ## Example Usage
 
 ```terraform
 # Example for AWS
 
-data "eventstorecloud_project" "example" {
+data "kurrentcloud_project" "example" {
   name = "Example Project"
 }
 
-resource "eventstorecloud_network" "example" {
+resource "kurrentcloud_network" "example" {
   name = "Example Network"
 
-  project_id = eventstorecloud_project.example.id
+  project_id = kurrentcloud_project.example.id
 
   resource_provider = "aws"
   region            = "us-west-2"
   cidr_block        = "172.21.0.0/16"
 }
 
-resource "eventstorecloud_managed_cluster" "example" {
+resource "kurrentcloud_managed_cluster" "example" {
   name = "Example Cluster"
 
-  project_id = eventstorecloud_network.example.project_id
-  network_id = eventstorecloud_network.example.id
+  project_id = kurrentcloud_network.example.project_id
+  network_id = kurrentcloud_network.example.id
 
   topology        = "three-node-multi-zone"
   instance_type   = "F1"
@@ -46,33 +46,33 @@ resource "eventstorecloud_managed_cluster" "example" {
 
 ## Accessing Initial Credentials
 
-When a managed cluster is created, EventStore Cloud generates initial credentials for the `admin` and `ops` users. These credentials are available as computed attributes and can be accessed via Terraform outputs.
+When a managed cluster is created, Kurrent Cloud generates initial credentials for the `admin` and `ops` users. These credentials are available as computed attributes and can be accessed via Terraform outputs.
 
 ### Example: Outputting Credentials
 
 ```terraform
-resource "eventstorecloud_managed_cluster" "example" {
+resource "kurrentcloud_managed_cluster" "example" {
   # ... cluster configuration
 }
 
 # Output the admin password
 output "cluster_admin_password" {
-  description = "Initial admin password for the EventStore cluster"
-  value       = eventstorecloud_managed_cluster.example.initial_admin_password
+  description = "Initial admin password for the Kurrent cluster"
+  value       = kurrentcloud_managed_cluster.example.initial_admin_password
   sensitive   = true
 }
 
 # Output the ops password  
 output "cluster_ops_password" {
-  description = "Initial ops password for the EventStore cluster"
-  value       = eventstorecloud_managed_cluster.example.initial_ops_password
+  description = "Initial ops password for the Kurrent cluster"
+  value       = kurrentcloud_managed_cluster.example.initial_ops_password
   sensitive   = true
 }
 
 # Output the credentials generation timestamp
 output "credentials_generated_at" {
   description = "Timestamp when the initial credentials were generated"
-  value       = eventstorecloud_managed_cluster.example.credentials_generated_at
+  value       = kurrentcloud_managed_cluster.example.credentials_generated_at
 }
 ```
 
@@ -91,7 +91,7 @@ terraform output -raw cluster_ops_password
 
 ### Important Notes
 
-- **Initial credentials are only available once** and may be cleared by EventStore Cloud for security reasons
+- **Initial credentials are only available once** and may be cleared by Kurrent Cloud for security reasons
 - **Credentials are marked as sensitive** to prevent accidental exposure in logs
 - **If credentials are no longer available**, the fields will be empty but the cluster will continue to function normally
 - **Use these credentials promptly** to create additional users or change passwords as needed
@@ -139,7 +139,7 @@ Use only the following values as `disk_type`:
 | Google Cloud | `ssd`             |
 | AWS          | `gp2`, `gp3`      |
 
-For `server_version`, use one of the available EventStoreDB product versions:
+For `server_version`, use one of the available KurrentDB product versions:
 - `23.10`
 - `24.10`
 - `25.0`
@@ -173,5 +173,5 @@ Use one of the following values as `topology`:
 Import is supported using the following syntax:
 
 ```shell
-terraform import eventstorecloud_managed_cluster.example project_id:cluster_id
+terraform import kurrentcloud_managed_cluster.example project_id:cluster_id
 ```

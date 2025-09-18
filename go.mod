@@ -1,4 +1,4 @@
-module github.com/EventStore/terraform-provider-eventstorecloud
+module github.com/kurrent-io/terraform-provider-kurrentcloud
 
 go 1.23
 

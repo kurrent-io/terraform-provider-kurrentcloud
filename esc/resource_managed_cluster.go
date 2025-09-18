@@ -9,12 +9,191 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 
-	"github.com/EventStore/terraform-provider-eventstorecloud/client"
+	"github.com/kurrent-io/terraform-provider-kurrentcloud/client"
 )
 
 func resourceManagedCluster() *schema.Resource {
 	return &schema.Resource{
-		Description: "Manages EventStoreDB instances and clusters in Event Store Cloud",
+		Description: "Manages KurrentDB instances and clusters in Kurrent Cloud",
+
+		CreateContext: resourceManagedClusterCreate,
+		ReadContext:   resourceManagedClusterRead,
+		UpdateContext: resourceManagedClusterUpdate,
+		DeleteContext: resourceManagedClusterDelete,
+
+		CustomizeDiff: resourceManagedClusterCustomizeDiff,
+
+		Importer: &schema.ResourceImporter{
+			StateContext: resourceImport,
+		},
+
+		Schema: map[string]*schema.Schema{
+			"project_id": {
+				Description: "ID of the project in which the managed cluster exists",
+				Required:    true,
+				ForceNew:    true,
+				Type:        schema.TypeString,
+			},
+			"network_id": {
+				Description: "ID of the network in which the managed cluster exists",
+				Required:    true,
+				ForceNew:    true,
+				Type:        schema.TypeString,
+			},
+			"name": {
+				Description: "Name of the managed cluster",
+				Required:    true,
+				ForceNew:    false,
+				Type:        schema.TypeString,
+			},
+			"topology": {
+				Description: "Topology of the managed cluster (`single-node` or `three-node-multi-zone`)",
+				Required:    true,
+				ForceNew:    true,
+				Type:        schema.TypeString,
+				ValidateDiagFunc: ValidateWithByPass(
+					validation.ToDiagFunc(validation.StringInSlice(validTopologies, true)),
+				),
+			},
+			"instance_type": {
+				Description: "Instance type of the managed cluster (find the list of valid values below). A different instance type will trigger a resize operation.",
+				Required:    true,
+				ForceNew:    false,
+				Type:        schema.TypeString,
+				ValidateDiagFunc: ValidateWithByPass(
+					validation.ToDiagFunc(validation.StringInSlice(validInstanceTypes, true)),
+				),
+				StateFunc: func(val interface{}) string {
+					// Normalize to lower case
+					return strings.ToLower(val.(string))
+				},
+			},
+			"disk_size": {
+				Description: "Size of the data disks, in gigabytes",
+				Required:    true,
+				Type:        schema.TypeInt,
+				ValidateDiagFunc: ValidateWithByPass(
+					validation.ToDiagFunc(validation.IntBetween(8, 4096)),
+				),
+			},
+			"disk_type": {
+				Description: "Storage class of the data disks (find the list of valid values below)",
+				Required:    true,
+				ForceNew:    false,
+				Type:        schema.TypeString,
+				ValidateDiagFunc: ValidateWithByPass(
+					validation.ToDiagFunc(validation.StringInSlice(validDiskTypes, true)),
+				),
+				StateFunc: func(val interface{}) string {
+					// Normalize to lower case
+					return strings.ToLower(val.(string))
+				},
+			},
+			"disk_iops": {
+				Description: "Number of IOPS for storage, required if disk_type is `gp3`",
+				Optional:    true,
+				Type:        schema.TypeInt,
+			},
+			"disk_throughput": {
+				Description: "Throughput in MB/s for storage, required if disk_type is `gp3`",
+				Optional:    true,
+				Type:        schema.TypeInt,
+			},
+			"server_version": {
+				Description: "Server version to provision (find the list of valid values below)",
+				Required:    true,
+				ForceNew:    false,
+				Type:        schema.TypeString,
+				StateFunc: func(val interface{}) string {
+					// Normalize to lower case
+					return strings.ToLower(val.(string))
+				},
+			},
+			"server_version_tag": {
+				Description: "Server version tag to provision (find the list of valid values below). A higher server_version_tag will prompt an upgrade.",
+				Optional:    true,
+				ForceNew:    false,
+				Computed:    true,
+				Type:        schema.TypeString,
+				StateFunc: func(val interface{}) string {
+					// Normalize to lower case
+					return strings.ToLower(val.(string))
+				},
+			},
+			"projection_level": {
+				Description: "Determines whether to run no projections, system projections only, or system and user projections (find the list of valid values below)",
+				Optional:    true,
+				ForceNew:    true,
+				Default:     "off",
+				Type:        schema.TypeString,
+				ValidateDiagFunc: ValidateWithByPass(
+					validation.ToDiagFunc(validation.StringInSlice(validProjectionLevels, true)),
+				),
+				StateFunc: func(val interface{}) string {
+					// Normalize to lower case
+					return strings.ToLower(val.(string))
+				},
+			},
+			"resource_provider": {
+				Description: "Provider in which the cluster was created. Determined by the provider of the Network.",
+				Type:        schema.TypeString,
+				Computed:    true,
+			},
+			"region": {
+				Description: "Region in which the cluster was created. Determined by the region of the Network",
+				Type:        schema.TypeString,
+				Computed:    true,
+			},
+			"dns_name": {
+				Description: "DNS address of the cluster",
+				Type:        schema.TypeString,
+				Computed:    true,
+			},
+			"protected": {
+				Description: "Protection from an accidental cluster deletion",
+				Type:        schema.TypeBool,
+				Default:     false,
+				Optional:    true,
+			},
+			"public_access": {
+				Description: "If true, the cluster is provisioned with a public endpoint",
+				Type:        schema.TypeBool,
+				Default:     false,
+				Optional:    true,
+				ForceNew:    true,
+			},
+			"acl_id": {
+				Description: "ID of the ACL if using public access",
+				Type:        schema.TypeString,
+				Default:     "",
+				Optional:    true,
+				ForceNew:    true,
+			},
+			"initial_admin_password": {
+				Description: "Initial password for the admin user",
+				Type:        schema.TypeString,
+				Computed:    true,
+				Sensitive:   true,
+			},
+			"initial_ops_password": {
+				Description: "Initial password for the ops user",
+				Type:        schema.TypeString,
+				Computed:    true,
+				Sensitive:   true,
+			},
+			"credentials_generated_at": {
+				Description: "Timestamp when the initial credentials were generated",
+				Type:        schema.TypeString,
+				Computed:    true,
+			},
+		},
+	}
+}
+
+func resourceEventstorecloudManagedCluster() *schema.Resource {
+	return &schema.Resource{
+		Description:        "Manages KurrentDB instances and clusters in Kurrent Cloud",
+		DeprecationMessage: "Use kurrentcloud_managed_cluster instead. eventstorecloud_managed_cluster will be removed in v3.0.0",
 
 		CreateContext: resourceManagedClusterCreate,
 		ReadContext:   resourceManagedClusterRead,
@@ -234,11 +413,14 @@ func resourceManagedClusterCreate(
 	}
 
 	// Retrieve initial credentials after cluster is available
-	credentialsResp, credErr := c.client.ManagedClusterGetInitialCredentials(ctx, &client.GetManagedClusterInitialCredentialsRequest{
-		OrganizationID: c.organizationId,
-		ProjectID:      projectId,
-		ClusterID:      resp.ClusterID,
-	})
+	credentialsResp, credErr := c.client.ManagedClusterGetInitialCredentials(
+		ctx,
+		&client.GetManagedClusterInitialCredentialsRequest{
+			OrganizationID: c.organizationId,
+			ProjectID:      projectId,
+			ClusterID:      resp.ClusterID,
+		},
+	)
 
 	// Set credentials if successfully retrieved, but don't fail the resource creation if they're not available
 	if credErr == nil && credentialsResp != nil {
@@ -340,11 +522,14 @@ func resourceManagedClusterRead(
 	}
 
 	// Attempt to retrieve initial credentials, but don't fail if not available
-	credentialsResp, credErr := c.client.ManagedClusterGetInitialCredentials(ctx, &client.GetManagedClusterInitialCredentialsRequest{
-		OrganizationID: c.organizationId,
-		ProjectID:      projectId,
-		ClusterID:      clusterId,
-	})
+	credentialsResp, credErr := c.client.ManagedClusterGetInitialCredentials(
+		ctx,
+		&client.GetManagedClusterInitialCredentialsRequest{
+			OrganizationID: c.organizationId,
+			ProjectID:      projectId,
+			ClusterID:      clusterId,
+		},
+	)
 
 	// Only set credentials if successfully retrieved
 	if credErr == nil && credentialsResp != nil {

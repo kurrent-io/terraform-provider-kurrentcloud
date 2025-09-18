@@ -1,1 +1,1 @@
-terraform import eventstorecloud_project.chicken_window project_id
+terraform import kurrentcloud_project.chicken_window project_id

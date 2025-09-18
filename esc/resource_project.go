@@ -6,12 +6,36 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
-	"github.com/EventStore/terraform-provider-eventstorecloud/client"
+	"github.com/kurrent-io/terraform-provider-kurrentcloud/client"
 )
 
 func resourceProject() *schema.Resource {
 	return &schema.Resource{
-		Description: "Manages projects within an organization in Event Store Cloud",
+		Description: "Manages projects within an organization in Kurrent Cloud",
+
+		CreateContext: resourceProjectCreate,
+		ReadContext:   resourceProjectRead,
+		UpdateContext: resourceProjectUpdate,
+		DeleteContext: resourceProjectDelete,
+
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
+
+		Schema: map[string]*schema.Schema{
+			"name": {
+				Description: "Human-friendly name for the project",
+				Type:        schema.TypeString,
+				Required:    true,
+			},
+		},
+	}
+}
+
+func resourceEventstorecloudProject() *schema.Resource {
+	return &schema.Resource{
+		Description:        "Manages projects within an organization in Kurrent Cloud",
+		DeprecationMessage: "Use kurrentcloud_project instead. eventstorecloud_project will be removed in v3.0.0",
 
 		CreateContext: resourceProjectCreate,
 		ReadContext:   resourceProjectRead,

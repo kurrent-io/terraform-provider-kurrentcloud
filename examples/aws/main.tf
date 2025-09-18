@@ -1,7 +1,7 @@
 terraform {
   required_providers {
-    eventstorecloud = {
-      source = "EventStore/eventstorecloud"
+    kurrentcloud = {
+      source = "kurrent-io/kurrentcloud"
     }
   }
 }
@@ -10,7 +10,7 @@ provider "aws" {
 
 }
 
-provider "eventstorecloud" {
+provider "kurrentcloud" {
 }
 
 data "aws_caller_identity" "example" {
@@ -24,28 +24,28 @@ resource "aws_vpc" "example" {
   }
 }
 
-resource "eventstorecloud_project" "chicken_window" {
+resource "kurrentcloud_project" "chicken_window" {
   name = "Improved Chicken Window"
 }
 
-resource "eventstorecloud_network" "chicken_window" {
+resource "kurrentcloud_network" "chicken_window" {
   name = "Chicken Window Net"
 
-  project_id = eventstorecloud_project.chicken_window.id
+  project_id = kurrentcloud_project.chicken_window.id
 
   resource_provider = "aws"
   region            = "us-west-2"
   cidr_block        = "172.21.0.0/16"
 }
 
-resource "eventstorecloud_peering" "peering" {
+resource "kurrentcloud_peering" "peering" {
   name = "Example Peering"
 
-  project_id = eventstorecloud_network.chicken_window.project_id
-  network_id = eventstorecloud_network.chicken_window.id
+  project_id = kurrentcloud_network.chicken_window.project_id
+  network_id = kurrentcloud_network.chicken_window.id
 
-  peer_resource_provider = eventstorecloud_network.chicken_window.resource_provider
-  peer_network_region    = eventstorecloud_network.chicken_window.region
+  peer_resource_provider = kurrentcloud_network.chicken_window.resource_provider
+  peer_network_region    = kurrentcloud_network.chicken_window.region
 
   peer_account_id = data.aws_caller_identity.example.account_id
   peer_network_id = aws_vpc.example.id
@@ -53,7 +53,7 @@ resource "eventstorecloud_peering" "peering" {
 }
 
 resource "aws_vpc_peering_connection_accepter" "peer" {
-  vpc_peering_connection_id = eventstorecloud_peering.peering.provider_metadata.aws_peering_link_id
+  vpc_peering_connection_id = kurrentcloud_peering.peering.provider_metadata.aws_peering_link_id
   auto_accept               = true
 
   tags = {
@@ -64,15 +64,15 @@ resource "aws_vpc_peering_connection_accepter" "peer" {
 
 resource "aws_route" "peering" {
   route_table_id            = aws_vpc.example.main_route_table_id
-  destination_cidr_block    = eventstorecloud_network.chicken_window.cidr_block
+  destination_cidr_block    = kurrentcloud_network.chicken_window.cidr_block
   vpc_peering_connection_id = aws_vpc_peering_connection_accepter.peer.id
 }
 
-resource "eventstorecloud_managed_cluster" "wings" {
+resource "kurrentcloud_managed_cluster" "wings" {
   name = "Wings Cluster"
 
-  project_id = eventstorecloud_network.chicken_window.project_id
-  network_id = eventstorecloud_network.chicken_window.id
+  project_id = kurrentcloud_network.chicken_window.project_id
+  network_id = kurrentcloud_network.chicken_window.id
 
   topology        = "single-node"
   instance_type   = "F1"
@@ -84,17 +84,17 @@ resource "eventstorecloud_managed_cluster" "wings" {
 }
 
 output "chicken_window_id" {
-  value = eventstorecloud_project.chicken_window.id
+  value = kurrentcloud_project.chicken_window.id
 }
 
 output "chicken_window_net" {
-  value = eventstorecloud_network.chicken_window
+  value = kurrentcloud_network.chicken_window
 }
 
 output "chicken_window_peering" {
-  value = eventstorecloud_peering.peering
+  value = kurrentcloud_peering.peering
 }
 
 output "wings_cluster_dns_name" {
-  value = eventstorecloud_managed_cluster.wings.dns_name
+  value = kurrentcloud_managed_cluster.wings.dns_name
 }

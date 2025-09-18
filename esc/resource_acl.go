@@ -6,12 +6,52 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
-	"github.com/EventStore/terraform-provider-eventstorecloud/client"
+	"github.com/kurrent-io/terraform-provider-kurrentcloud/client"
 )
 
 func resourceAcl() *schema.Resource {
 	return &schema.Resource{
 		Description: "Manages IP Access Lists",
+
+		CreateContext: resourceAclCreate,
+		ReadContext:   resourceAclRead,
+		UpdateContext: resourceAclUpdate,
+		DeleteContext: resourceAclDelete,
+
+		Importer: &schema.ResourceImporter{
+			StateContext: resourceImport,
+		},
+
+		Schema: map[string]*schema.Schema{
+			"project_id": {
+				Description: "Project ID",
+				Required:    true,
+				ForceNew:    true,
+				Type:        schema.TypeString,
+			},
+			"cidr_blocks": {
+				Description: "CIDR blocks allowed by the IP access list",
+				Required:    true,
+				ForceNew:    false,
+				Type:        schema.TypeList,
+				Elem: &schema.Schema{
+					Type: schema.TypeMap,
+				},
+			},
+			"name": {
+				Description: "Human-friendly name for the Acl",
+				Type:        schema.TypeString,
+				Required:    true,
+			},
+		},
+	}
+}
+
+// Deprecated: Use kurrentcloud_acl instead. eventstorecloud_acl will be removed in v3.0.0
+func resourceEventstorecloudAcl() *schema.Resource {
+	return &schema.Resource{
+		Description:        "Manages IP Access Lists",
+		DeprecationMessage: "Use kurrentcloud_acl instead. eventstorecloud_acl will be removed in v3.0.0",
 
 		CreateContext: resourceAclCreate,
 		ReadContext:   resourceAclRead,
@@ -76,19 +116,11 @@ func translateCidrBlocksToTf(cidrBlocks []client.AclCidrBlock) []map[string]inte
 	return result
 }
 
-// In terraform when we read back values they will always be of type []interface{}
-// even if we passed a []map[string]interface{} originally. This takes []interface{} and builds
-// a []string by casting each element individually.
-func interfaceToCid(value interface{}) []client.AclCidrBlock {
-	list := value.([]interface{})
-	result := []client.AclCidrBlock{}
-	for _, element := range list {
-		result = append(result, element.(client.AclCidrBlock))
-	}
-	return result
-}
-
-func resourceAclCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAclCreate(
+	ctx context.Context,
+	d *schema.ResourceData,
+	meta interface{},
+) diag.Diagnostics {
 	c := meta.(*providerContext)
 
 	projectId := d.Get("project_id").(string)
@@ -110,7 +142,11 @@ func resourceAclCreate(ctx context.Context, d *schema.ResourceData, meta interfa
 	return resourceAclRead(ctx, d, meta)
 }
 
-func resourceAclUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAclUpdate(
+	ctx context.Context,
+	d *schema.ResourceData,
+	meta interface{},
+) diag.Diagnostics {
 	c := meta.(*providerContext)
 
 	if d.HasChange("name") || d.HasChange("cidr_blocks") {
@@ -134,7 +170,11 @@ func resourceAclUpdate(ctx context.Context, d *schema.ResourceData, meta interfa
 	return resourceAclRead(ctx, d, meta)
 }
 
-func resourceAclRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAclRead(
+	ctx context.Context,
+	d *schema.ResourceData,
+	meta interface{},
+) diag.Diagnostics {
 	c := meta.(*providerContext)
 
 	var diags diag.Diagnostics
@@ -170,7 +210,11 @@ func resourceAclRead(ctx context.Context, d *schema.ResourceData, meta interface
 	return diags
 }
 
-func resourceAclDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAclDelete(
+	ctx context.Context,
+	d *schema.ResourceData,
+	meta interface{},
+) diag.Diagnostics {
 	c := meta.(*providerContext)
 
 	var diags diag.Diagnostics

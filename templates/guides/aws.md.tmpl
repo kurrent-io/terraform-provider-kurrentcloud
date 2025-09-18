@@ -1,17 +1,17 @@
 ---
 subcategory: ""
-page_title: "Provision Event Store Cloud resources in AWS"
+page_title: "Provision Kurrent Cloud resources in AWS"
 description: |-
-    A sample Terraform project to provision all the Event Store Cloud resources in AWS.
+    A sample Terraform project to provision all the Kurrent Cloud resources in AWS.
 ---
 
-# Event Store Cloud in AWS
+# Kurrent Cloud in AWS
 
-The sample project creates the following resources in Event Store Cloud:
+The sample project creates the following resources in Kurrent Cloud:
 - Project
 - Network
 - Network peering
-- Managed EventStoreDB using single F1 node with 16GB disk
+- Managed KurrentDB using single F1 node with 16GB disk
 
 From the AWS side, you still need to accept the peering request and configure the route as described in the [documentation](https://developers.eventstore.com/cloud/provision/aws/#network-peering).
 This step can be also automated using the AWS Terraform provider.

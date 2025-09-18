@@ -10,12 +10,103 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 
-	"github.com/EventStore/terraform-provider-eventstorecloud/client"
+	"github.com/kurrent-io/terraform-provider-kurrentcloud/client"
 )
 
 func resourcePeering() *schema.Resource {
 	return &schema.Resource{
-		Description: "Manages peering connections between Event Store Cloud VPCs and customer own VPCs",
+		Description: "Manages peering connections between Kurrent Cloud VPCs and customer own VPCs",
+
+		CreateContext: resourcePeeringCreate,
+		ReadContext:   resourcePeeringRead,
+		UpdateContext: resourcePeeringUpdate,
+		DeleteContext: resourcePeeringDelete,
+
+		Importer: &schema.ResourceImporter{
+			StateContext: resourceImport,
+		},
+
+		SchemaVersion: 1,
+		Schema: map[string]*schema.Schema{
+			"project_id": {
+				Description: "Project ID",
+				Required:    true,
+				ForceNew:    true,
+				Type:        schema.TypeString,
+			},
+			"network_id": {
+				Description: "Network ID",
+				Required:    true,
+				ForceNew:    true,
+				Type:        schema.TypeString,
+			},
+			"peer_resource_provider": {
+				Description:  "Cloud Provider in which the target network exists",
+				Required:     true,
+				ForceNew:     true,
+				Type:         schema.TypeString,
+				ValidateFunc: validation.StringInSlice(validProviders, true),
+			},
+			"peer_network_region": {
+				Description: "Provider region in which to the peer network exists",
+				Required:    true,
+				ForceNew:    true,
+				Type:        schema.TypeString,
+			},
+			"peer_account_id": {
+				Description: "Account identifier in which to the peer network exists",
+				Required:    true,
+				ForceNew:    true,
+				Type:        schema.TypeString,
+			},
+			"peer_network_id": {
+				Description: "Network identifier of the peer network exists",
+				Required:    true,
+				ForceNew:    true,
+				Type:        schema.TypeString,
+			},
+			"name": {
+				Description: "Human-friendly name for the network",
+				Type:        schema.TypeString,
+				Required:    true,
+			},
+			"routes": {
+				Description: "Routes to create from the Event Store network to the peer network",
+				Type:        schema.TypeSet,
+				ForceNew:    true,
+				Required:    true,
+				Elem: &schema.Schema{
+					Type:         schema.TypeString,
+					ValidateFunc: validation.IsCIDRNetwork(8, 28),
+				},
+				Set: schema.HashString,
+			},
+
+			"provider_metadata": {
+				Description: "Metadata about the remote end of the peering connection",
+				Type:        schema.TypeMap,
+				Computed:    true,
+				Elem: &schema.Schema{
+					Type:     schema.TypeString,
+					Computed: true,
+				},
+			},
+		},
+
+		StateUpgraders: []schema.StateUpgrader{
+			{
+				Version: 0,
+				Type:    cty.Object(map[string]cty.Type{}),
+				Upgrade: upgrade1_5_6,
+			},
+		},
+	}
+}
+
+func resourceEventstorecloudPeering() *schema.Resource {
+	return &schema.Resource{
+		Description:        "Manages peering connections between Kurrent Cloud VPCs and customer own VPCs",
+		DeprecationMessage: "Use kurrentcloud_peering instead. eventstorecloud_peering will be removed in v3.0.0",
 
 		CreateContext: resourcePeeringCreate,
 		ReadContext:   resourcePeeringRead,

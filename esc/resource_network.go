@@ -9,12 +9,78 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 
-	"github.com/EventStore/terraform-provider-eventstorecloud/client"
+	"github.com/kurrent-io/terraform-provider-kurrentcloud/client"
 )
 
 func resourceNetwork() *schema.Resource {
 	return &schema.Resource{
-		Description: "Manages VPC (network) resources in Event Store Cloud",
+		Description: "Manages VPC (network) resources in Kurrent Cloud",
+
+		CreateContext: resourceNetworkCreate,
+		ReadContext:   resourceNetworkRead,
+		UpdateContext: resourceNetworkUpdate,
+		DeleteContext: resourceNetworkDelete,
+
+		Importer: &schema.ResourceImporter{
+			StateContext: resourceImport,
+		},
+
+		Schema: map[string]*schema.Schema{
+			"project_id": {
+				Description: "Project ID",
+				Required:    true,
+				ForceNew:    true,
+				Type:        schema.TypeString,
+			},
+			"resource_provider": {
+				Description: "Cloud Provider in which to provision the network.",
+				Required:    true,
+				ForceNew:    true,
+				Type:        schema.TypeString,
+				ValidateDiagFunc: ValidateWithByPass(
+					validation.ToDiagFunc(validation.StringInSlice(validProviders, true)),
+				),
+				StateFunc: func(val interface{}) string {
+					// Normalize to lower case
+					return strings.ToLower(val.(string))
+				},
+			},
+			"region": {
+				Description: "Provider region in which to provision the network",
+				Required:    true,
+				ForceNew:    true,
+				Type:        schema.TypeString,
+			},
+			"cidr_block": {
+				Description:  "Address space of the network in CIDR block notation",
+				Required:     false,
+				ForceNew:     true,
+				Default:      "",
+				Type:         schema.TypeString,
+				ValidateFunc: validation.IsCIDRNetwork(8, 24),
+				Optional:     true,
+			},
+			"name": {
+				Description: "Human-friendly name for the network",
+				Type:        schema.TypeString,
+				Required:    true,
+			},
+			"public_access": {
+				Description: "Whether the network is able to be accessed from the public internet",
+				Type:        schema.TypeBool,
+				Default:     false,
+				Required:    false,
+				ForceNew:    true,
+				Optional:    true,
+			},
+		},
+	}
+}
+
+func resourceEventstorecloudNetwork() *schema.Resource {
+	return &schema.Resource{
+		Description:        "Manages VPC (network) resources in Kurrent Cloud",
+		DeprecationMessage: "Use kurrentcloud_network instead. eventstorecloud_network will be removed in v3.0.0",
 
 		CreateContext: resourceNetworkCreate,
 		ReadContext:   resourceNetworkRead,
@@ -97,10 +163,14 @@ func resourceNetworkCreate(
 	}
 
 	if request.PublicAccess && request.CidrBlock != "" {
-		return diag.Errorf("Error: network resources with \"public_access\" set to true can not set \"cidr_block\".")
+		return diag.Errorf(
+			"Error: network resources with \"public_access\" set to true can not set \"cidr_block\".",
+		)
 	}
 	if !request.PublicAccess && request.CidrBlock == "" {
-		return diag.Errorf("Error: network resources with \"public_access\" set to false must set \"cidr_block\".")
+		return diag.Errorf(
+			"Error: network resources with \"public_access\" set to false must set \"cidr_block\".",
+		)
 	}
 
 	resp, err := c.client.NetworkCreate(ctx, request)

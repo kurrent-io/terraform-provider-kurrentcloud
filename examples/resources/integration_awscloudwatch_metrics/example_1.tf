@@ -52,7 +52,7 @@ EOF
 }
 
 
-resource "eventstorecloud_integration_awscloudwatch_metrics" "cloudwatch" {
+resource "kurrentcloud_integration_awscloudwatch_metrics" "cloudwatch" {
   project_id        = var.project_id
   cluster_ids       = [var.cluster_id]
   description       = "send ESDB metrics to AWS CloudWatch"

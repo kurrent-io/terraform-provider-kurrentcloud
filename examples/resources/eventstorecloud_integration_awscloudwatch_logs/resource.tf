@@ -46,7 +46,7 @@ resource "aws_iam_user_policy" "esdb_logs" {
 EOF
 }
 
-resource "eventstorecloud_integration_awscloudwatch_logs" "cloudwatch" {
+resource "kurrentcloud_integration_awscloudwatch_logs" "cloudwatch" {
   project_id        = var.project_id
   cluster_ids       = [var.cluster_id]
   description       = "send ESDB logs to AWS CloudWatch"

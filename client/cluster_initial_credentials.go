@@ -63,7 +63,11 @@ func (c *Client) ManagedClusterGetInitialCredentials(
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, translateStatusCode(resp.StatusCode, "getting cluster initial credentials", resp.Body)
+		return nil, translateStatusCode(
+			resp.StatusCode,
+			"getting cluster initial credentials",
+			resp.Body,
+		)
 	}
 
 	decoder := json.NewDecoder(resp.Body)

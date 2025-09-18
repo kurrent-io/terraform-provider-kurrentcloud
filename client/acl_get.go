@@ -29,9 +29,21 @@ type GetAclResponse struct {
 	Acl Acl `json:"acl"`
 }
 
-func (c *Client) AclGet(ctx context.Context, req *GetAclRequest) (*GetAclResponse, diag.Diagnostics) {
+func (c *Client) AclGet(
+	ctx context.Context,
+	req *GetAclRequest,
+) (*GetAclResponse, diag.Diagnostics) {
 	requestURL := *c.apiURL
-	requestURL.Path = path.Join("infra", "v1", "organizations", req.OrganizationID, "projects", req.ProjectID, "acls", req.AclID)
+	requestURL.Path = path.Join(
+		"infra",
+		"v1",
+		"organizations",
+		req.OrganizationID,
+		"projects",
+		req.ProjectID,
+		"acls",
+		req.AclID,
+	)
 
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, requestURL.String(), nil)
 	if err != nil {

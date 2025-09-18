@@ -1,12 +1,12 @@
 ---
-page_title: "Resource eventstorecloud_integration_awscloudwatch_metrics - terraform-provider-eventstorecloud"
+page_title: "Resource kurrentcloud_integration_awscloudwatch_metrics - terraform-provider-kurrentcloud"
 subcategory: ""
 description: |-
   Manages integrations for AwsCloudWatch metrics.
   NOTE: This functionality is currently in beta. To access it please contact support.
 ---
 
-# Resource (eventstorecloud_integration_awscloudwatch_metrics)
+# Resource (kurrentcloud_integration_awscloudwatch_metrics)
 
 Manages integrations for AwsCloudWatch metrics.
 
@@ -69,7 +69,7 @@ EOF
 }
 
 
-resource "eventstorecloud_integration_awscloudwatch_metrics" "cloudwatch" {
+resource "kurrentcloud_integration_awscloudwatch_metrics" "cloudwatch" {
   project_id        = var.project_id
   cluster_ids       = [var.cluster_id]
   description       = "send ESDB metrics to AWS CloudWatch"
@@ -102,6 +102,6 @@ resource "eventstorecloud_integration_awscloudwatch_metrics" "cloudwatch" {
 
 It is recommended you create credentials especially for use with this resource which have extremely limited access. A good example is shown in the snippet above, where the `aws_iam_user` resource only has permissions to put metric data into the given AWS CloudWatch namespace.
 
-While is it possible to use the `eventstorecloud_integration` resource with a sink property of `awsCloudWatchMetrics`, it is recommended to use the `eventstorecloud_integration_awscloudwatch_metrics` resource instead as the IAM credentials get marked as sensitive to Terraform and will not be shown when running steps such as `terraform plan`.
+While is it possible to use the `kurrentcloud_integration` resource with a sink property of `awsCloudWatchMetrics`, it is recommended to use the `kurrentcloud_integration_awscloudwatch_metrics` resource instead as the IAM credentials get marked as sensitive to Terraform and will not be shown when running steps such as `terraform plan`.
 
 Even then, the IAM credentials given to this resource will be stored in the Terraform raw state as plain-text. More information on sensitive data in Terraform state can be read [here](https://www.terraform.io/language/state/sensitive-data).

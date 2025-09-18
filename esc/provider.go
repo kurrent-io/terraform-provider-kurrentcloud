@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
-	"github.com/EventStore/terraform-provider-eventstorecloud/client"
+	"github.com/kurrent-io/terraform-provider-kurrentcloud/client"
 )
 
 var defaultTokenStore = filepath.Join(os.Getenv("HOME"), ".esctf", "tokens")
@@ -74,20 +74,36 @@ func New(version string) func() *schema.Provider {
 			},
 
 			DataSourcesMap: map[string]*schema.Resource{
-				"eventstorecloud_project": dataSourceProject(),
-				"eventstorecloud_network": dataSourceNetwork(),
+				"kurrentcloud_project": dataSourceProject(),
+				"kurrentcloud_network": dataSourceNetwork(),
+
+				// Deprecated names
+				"eventstorecloud_project": dataSourceEventstorecloudProject(),
+				"eventstorecloud_network": dataSourceEventstorecloudNetwork(),
 			},
 
 			ResourcesMap: map[string]*schema.Resource{
-				"eventstorecloud_project":                           resourceProject(),
-				"eventstorecloud_acl":                               resourceAcl(),
-				"eventstorecloud_network":                           resourceNetwork(),
-				"eventstorecloud_peering":                           resourcePeering(),
-				"eventstorecloud_managed_cluster":                   resourceManagedCluster(),
-				"eventstorecloud_scheduled_backup":                  resourceScheduledBackup(),
-				"eventstorecloud_integration":                       resourceIntegration(),
-				"eventstorecloud_integration_awscloudwatch_logs":    resourceIntegrationAwsCloudWatchLogs(),
-				"eventstorecloud_integration_awscloudwatch_metrics": resourceIntegrationAwsCloudWatchMetrics(),
+				// New preferred names
+				"kurrentcloud_project":                           resourceProject(),
+				"kurrentcloud_acl":                               resourceAcl(),
+				"kurrentcloud_network":                           resourceNetwork(),
+				"kurrentcloud_peering":                           resourcePeering(),
+				"kurrentcloud_managed_cluster":                   resourceManagedCluster(),
+				"kurrentcloud_scheduled_backup":                  resourceScheduledBackup(),
+				"kurrentcloud_integration":                       resourceIntegration(),
+				"kurrentcloud_integration_awscloudwatch_logs":    resourceIntegrationAwsCloudWatchLogs(),
+				"kurrentcloud_integration_awscloudwatch_metrics": resourceIntegrationAwsCloudWatchMetrics(),
+
+				// Deprecated names
+				"eventstorecloud_project":                           resourceEventstorecloudProject(),
+				"eventstorecloud_acl":                               resourceEventstorecloudAcl(),
+				"eventstorecloud_network":                           resourceEventstorecloudNetwork(),
+				"eventstorecloud_peering":                           resourceEventstorecloudPeering(),
+				"eventstorecloud_managed_cluster":                   resourceEventstorecloudManagedCluster(),
+				"eventstorecloud_scheduled_backup":                  resourceEventstorecloudScheduledBackup(),
+				"eventstorecloud_integration":                       resourceEventstorecloudIntegration(),
+				"eventstorecloud_integration_awscloudwatch_logs":    resourceEventstorecloudIntegrationAwsCloudWatchLogs(),
+				"eventstorecloud_integration_awscloudwatch_metrics": resourceEventstorecloudIntegrationAwsCloudWatchMetrics(),
 			},
 		}
 
@@ -116,6 +132,11 @@ func configure(
 	p *schema.Provider,
 ) func(context.Context, *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	return func(_ context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
+		// Set Terraform version for telemetry from the provider instance
+		if p.TerraformVersion != "" {
+			client.TerraformVersion = p.TerraformVersion
+		}
+
 		config := &client.Config{
 			URL:                 d.Get("url").(string),
 			RefreshToken:        d.Get("token").(string),
