@@ -1,10 +1,22 @@
-# Terraform Provider for Event Store Cloud
+# Terraform Provider for Kurrent Cloud
 
-This repository contains a [Terraform][terraform] provider for provisioning resources in [Event Store Cloud][esc].
+This repository contains a [Terraform][terraform] provider for provisioning resources in [Kurrent Cloud][esc] (formerly Event Store Cloud).
 
 ## Documentation
 
 You can browse documentation on the [Terraform provider registry](https://registry.terraform.io/providers/kurrent-io/kurrentcloud/latest/docs).
+
+## Migration from EventStore Cloud Provider
+
+If you're migrating from the legacy `EventStore/eventstorecloud` provider to `kurrent-io/kurrentcloud`, please see our comprehensive **[Migration Guide](MIGRATION.md)**.
+
+### Quick Migration Summary
+
+1. **Provider Registry**: Change from `EventStore/eventstorecloud` to `kurrent-io/kurrentcloud`
+2. **Resource Prefixes**: `eventstorecloud_*` resources are deprecated, use `kurrentcloud_*` instead
+3. **Version 2.0.0+**: Both prefixes supported for backward compatibility
+
+For detailed instructions, troubleshooting, and examples, see **[MIGRATION.md](MIGRATION.md)**.
 
 ## Contributing
 
