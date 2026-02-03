@@ -5,44 +5,17 @@ description: |-
   Manages KurrentDB instances and clusters in Kurrent Cloud
 ---
 
+{{/* This template serves as a starting point for documentation generation, and can be customized with hardcoded values and/or doc gen templates.
+
+For example, the {{ .SchemaMarkdown }} template can be used to replace manual schema documentation if descriptions of schema attributes are added in the provider source code. */ -}}
+
 # Resource (kurrentcloud_managed_cluster)
 
 Manages KurrentDB instances and clusters in Kurrent Cloud
 
 ## Example Usage
 
-```terraform
-# Example for AWS
-
-data "kurrentcloud_project" "example" {
-  name = "Example Project"
-}
-
-resource "kurrentcloud_network" "example" {
-  name = "Example Network"
-
-  project_id = kurrentcloud_project.example.id
-
-  resource_provider = "aws"
-  region            = "us-west-2"
-  cidr_block        = "172.21.0.0/16"
-}
-
-resource "kurrentcloud_managed_cluster" "example" {
-  name = "Example Cluster"
-
-  project_id = kurrentcloud_network.example.project_id
-  network_id = kurrentcloud_network.example.id
-
-  topology        = "three-node-multi-zone"
-  instance_type   = "F1"
-  disk_size       = 24
-  disk_type       = "gp3"
-  disk_iops       = 3000
-  disk_throughput = 125
-  server_version  = "23.10"
-}
-```
+{{tffile "examples/resources/managed_cluster/example_1.tf"}}
 
 ## Accessing Initial Credentials
 
@@ -140,9 +113,8 @@ Use only the following values as `disk_type`:
 | AWS          | `gp2`, `gp3`      |
 
 For `server_version`, use one of the available KurrentDB product versions:
-- `23.10`
 - `24.10`
-- `25.0`
+- `26.0`
 
 For `projection_level`, use one of the following values:
 - `off` (the projections subsystem is disabled completely)
