@@ -1,3 +1,11 @@
+variable "region" {
+  type = string
+}
+
+variable "stage" {
+  type = string
+}
+
 locals {
   describe_log_groups_arn = "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:*"
 }
