@@ -81,4 +81,4 @@ Import is supported using the following syntax:
 terraform import kurrentcloud_peering.example project_id:peering_id
 ```
 
-~> Keep in mind that additional operations might be required to activate the peering link. Check our [provisioning guidelines](https://developers.eventstore.com/cloud/provision/) for each of the supported cloud providers to know more.
+~> Keep in mind that additional operations might be required to activate the peering link. Check our [Getting Started](https://docs.kurrent.io/cloud/getting-started/) docs for each of the supported cloud providers to know more.

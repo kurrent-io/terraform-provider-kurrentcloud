@@ -14,7 +14,7 @@ The sample project creates the following resources in Kurrent Cloud:
 - Managed KurrentDB using single F1 node with 16GB disk
 
 From the Azure side, you still need to register the Kurrent Cloud service account with the necessary permissions to create a network peering.
-Read more in the provisioning [documentation](https://developers.eventstore.com/cloud/provision/azure/#network-peering).
+Read more in the provisioning [documentation](https://docs.kurrent.io/cloud/getting-started/private-access/azure.html#network-peering).
 
 ```terraform
 terraform {

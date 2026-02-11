@@ -13,7 +13,7 @@ The sample project creates the following resources in Kurrent Cloud:
 - Network peering
 - Managed KurrentDB using single F1 node with 16GB disk
 
-From the GCP side, you still need to create an incoming peering from your GCP account towards the Kurrent Cloud VPC as described in the [documentation](https://developers.eventstore.com/cloud/provision/gcp/#network-peering).
+From the GCP side, you still need to create an incoming peering from your GCP account towards the Kurrent Cloud VPC as described in the [documentation](https://docs.kurrent.io/cloud/getting-started/private-access/gcp.html#network-peering).
 This step can be also automated using the GCP Terraform provider.
 
 ```terraform

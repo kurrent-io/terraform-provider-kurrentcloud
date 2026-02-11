@@ -169,23 +169,6 @@ func resourceManagedCluster() *schema.Resource {
 				Optional:    true,
 				ForceNew:    true,
 			},
-			"initial_admin_password": {
-				Description: "Initial password for the admin user",
-				Type:        schema.TypeString,
-				Computed:    true,
-				Sensitive:   true,
-			},
-			"initial_ops_password": {
-				Description: "Initial password for the ops user",
-				Type:        schema.TypeString,
-				Computed:    true,
-				Sensitive:   true,
-			},
-			"credentials_generated_at": {
-				Description: "Timestamp when the initial credentials were generated",
-				Type:        schema.TypeString,
-				Computed:    true,
-			},
 		},
 	}
 }
@@ -348,23 +331,6 @@ func resourceEventstorecloudManagedCluster() *schema.Resource {
 				Optional:    true,
 				ForceNew:    true,
 			},
-			"initial_admin_password": {
-				Description: "Initial password for the admin user",
-				Type:        schema.TypeString,
-				Computed:    true,
-				Sensitive:   true,
-			},
-			"initial_ops_password": {
-				Description: "Initial password for the ops user",
-				Type:        schema.TypeString,
-				Computed:    true,
-				Sensitive:   true,
-			},
-			"credentials_generated_at": {
-				Description: "Timestamp when the initial credentials were generated",
-				Type:        schema.TypeString,
-				Computed:    true,
-			},
 		},
 	}
 }
@@ -410,29 +376,6 @@ func resourceManagedClusterCreate(
 		State:          "available",
 	}); err != nil {
 		return err
-	}
-
-	// Retrieve initial credentials after cluster is available
-	credentialsResp, credErr := c.client.ManagedClusterGetInitialCredentials(
-		ctx,
-		&client.GetManagedClusterInitialCredentialsRequest{
-			OrganizationID: c.organizationId,
-			ProjectID:      projectId,
-			ClusterID:      resp.ClusterID,
-		},
-	)
-
-	// Set credentials if successfully retrieved, but don't fail the resource creation if they're not available
-	if credErr == nil && credentialsResp != nil {
-		if err := d.Set("initial_admin_password", credentialsResp.AdminPassword); err != nil {
-			return diag.FromErr(err)
-		}
-		if err := d.Set("initial_ops_password", credentialsResp.OpsPassword); err != nil {
-			return diag.FromErr(err)
-		}
-		if err := d.Set("credentials_generated_at", credentialsResp.GeneratedAt); err != nil {
-			return diag.FromErr(err)
-		}
 	}
 
 	return resourceManagedClusterRead(ctx, d, meta)
@@ -519,40 +462,6 @@ func resourceManagedClusterRead(
 	}
 	if err := d.Set("acl_id", resp.ManagedCluster.AclId); err != nil {
 		diags = append(diags, diag.FromErr(err)...)
-	}
-
-	// Attempt to retrieve initial credentials, but don't fail if not available
-	credentialsResp, credErr := c.client.ManagedClusterGetInitialCredentials(
-		ctx,
-		&client.GetManagedClusterInitialCredentialsRequest{
-			OrganizationID: c.organizationId,
-			ProjectID:      projectId,
-			ClusterID:      clusterId,
-		},
-	)
-
-	// Only set credentials if successfully retrieved
-	if credErr == nil && credentialsResp != nil {
-		if err := d.Set("initial_admin_password", credentialsResp.AdminPassword); err != nil {
-			diags = append(diags, diag.FromErr(err)...)
-		}
-		if err := d.Set("initial_ops_password", credentialsResp.OpsPassword); err != nil {
-			diags = append(diags, diag.FromErr(err)...)
-		}
-		if err := d.Set("credentials_generated_at", credentialsResp.GeneratedAt); err != nil {
-			diags = append(diags, diag.FromErr(err)...)
-		}
-	} else {
-		// Clear credential fields if they're no longer available
-		if err := d.Set("initial_admin_password", ""); err != nil {
-			diags = append(diags, diag.FromErr(err)...)
-		}
-		if err := d.Set("initial_ops_password", ""); err != nil {
-			diags = append(diags, diag.FromErr(err)...)
-		}
-		if err := d.Set("credentials_generated_at", ""); err != nil {
-			diags = append(diags, diag.FromErr(err)...)
-		}
 	}
 
 	return diags

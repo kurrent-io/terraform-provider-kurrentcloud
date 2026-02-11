@@ -50,12 +50,12 @@ resource "kurrentcloud_integration" "slack_notifications" {
 
 ### Data Properties
 
-- **source** (String) Can be either `issues` or `notifications`. See [here](https://developers.eventstore.com/cloud/integrations/#integration-sources) for information on the types of integration sources
-- **sinks** (String) The type of this value determines the acceptable settings for `source` as well as what other properties are allowed in this field. See [here](https://developers.eventstore.com/cloud/integrations/#integration-sinks) for information on integration sinks
+- **source** (String) Can be either `issues` or `notifications`. See [here](https://docs.kurrent.io/cloud/integrations/#integration-sources) for information on the types of integration sources
+- **sinks** (String) The type of this value determines the acceptable settings for `source` as well as what other properties are allowed in this field. See [here](https://docs.kurrent.io/cloud/integrations/#integration-sinks) for information on integration sinks
 
 #### OpsGenie Data Properties
 
-OpsGenie currently only supports the "issues" source. See [here](https://developers.eventstore.com/cloud/integrations/opsgenie.html#how-to-create-an-api-key) for more info on creating OpsGenie integrations.
+OpsGenie currently only supports the "issues" source. See [here](https://docs.kurrent.io/cloud/integrations/opsgenie.html) for more info on creating OpsGenie integrations.
 
 - **api_key** (String) A secret key required to integrate with OpsGenie.
 
@@ -63,9 +63,9 @@ OpsGenie currently only supports the "issues" source. See [here](https://develop
 
 #### Slack Data Properties
 
-Slack currently only supports the "issues" and "notification" sources. See [here](https://developers.eventstore.com/cloud/integrations/slack.html) for more info on creating Slack integrations
+Slack currently only supports the "issues" and "notification" sources. See [here](https://docs.kurrent.io/cloud/integrations/slack.html) for more info on creating Slack integrations
 
-- **channel_id** (String) The channel in Slack that messages will be sent. See [here](https://developers.eventstore.com/cloud/integrations/slack.html) for more info. Can be retrieved as an output value.
+- **channel_id** (String) The channel in Slack that messages will be sent. See [here](https://docs.kurrent.io/cloud/integrations/slack.html) for more info. Can be retrieved as an output value.
 - **token** (String) A secret token required to integrate with Slack.
 
 ~> The `token` value is considered private and so is NOT ever returned by the Event Store Cloud API. For that reason it is impossible to display it as a Terraform output value.
