@@ -123,7 +123,7 @@ func resourceManagedCluster() *schema.Resource {
 			"projection_level": {
 				Description: "Determines whether to run no projections, system projections only, or system and user projections (find the list of valid values below)",
 				Optional:    true,
-				ForceNew:    true,
+				ForceNew:    false,
 				Default:     "off",
 				Type:        schema.TypeString,
 				ValidateDiagFunc: ValidateWithByPass(
@@ -285,7 +285,7 @@ func resourceEventstorecloudManagedCluster() *schema.Resource {
 			"projection_level": {
 				Description: "Determines whether to run no projections, system projections only, or system and user projections (find the list of valid values below)",
 				Optional:    true,
-				ForceNew:    true,
+				ForceNew:    false,
 				Default:     "off",
 				Type:        schema.TypeString,
 				ValidateDiagFunc: ValidateWithByPass(
@@ -477,7 +477,9 @@ func resourceManagedClusterUpdate(
 	projectId := d.Get("project_id").(string)
 	clusterId := d.Id()
 
-	if d.HasChange("name") || d.HasChange("protected") {
+	projectionLevelChanged := d.HasChange("projection_level")
+
+	if d.HasChange("name") || d.HasChange("protected") || projectionLevelChanged {
 		request := &client.ManagedClusterUpdateRequest{
 			OrganizationID: c.organizationId,
 			ProjectID:      projectId,
@@ -485,9 +487,23 @@ func resourceManagedClusterUpdate(
 			Description:    d.Get("name").(string),
 			Protected:      d.Get("protected").(bool),
 		}
+		if projectionLevelChanged {
+			request.ProjectionLevel = strings.ToLower(d.Get("projection_level").(string))
+		}
 
 		if err := c.client.ManagedClusterUpdate(ctx, request); err != nil {
 			return err
+		}
+
+		if projectionLevelChanged {
+			if err := c.client.ManagedClusterWaitForState(ctx, &client.WaitForManagedClusterStateRequest{
+				OrganizationID: c.organizationId,
+				ProjectID:      projectId,
+				ClusterID:      clusterId,
+				State:          "available",
+			}); err != nil {
+				return err
+			}
 		}
 	}
 
