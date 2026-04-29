@@ -27,26 +27,22 @@ var terminalReplicaSetFailureStates = map[string]struct{}{
 	"config change failed":        {},
 }
 
-const (
-	replicaSetPollInterval = 5 * time.Second
-	// Grace window before treating a sustained "defunct" status as a hard
-	// failure. Matches the heuristic used by ManagedClusterWaitForState:
-	// resources transitioning out of "defunct" sometimes report it briefly
-	// before settling, so don't fail on the first sighting.
-	replicaSetDefunctGrace = 30 * time.Second
-)
+const replicaSetPollInterval = 5 * time.Second
 
 func (c *Client) ReplicaSetWaitForState(
 	ctx context.Context,
 	req *WaitForReplicaSetStateRequest,
 ) diag.Diagnostics {
+	start := time.Now()
+
 	getRequest := &GetReplicaSetRequest{
 		OrganizationID: req.OrganizationID,
 		ProjectID:      req.ProjectID,
 		ClusterID:      req.ClusterID,
 	}
 
-	var defunctSince time.Time
+	ticker := time.NewTicker(replicaSetPollInterval)
+	defer ticker.Stop()
 
 	for {
 		resp, err := c.ReplicaSetGet(ctx, getRequest)
@@ -69,22 +65,21 @@ func (c *Client) ReplicaSetWaitForState(
 		}
 
 		if status == StateDefunct {
-			if defunctSince.IsZero() {
-				defunctSince = time.Now()
-			} else if time.Since(defunctSince) > replicaSetDefunctGrace {
+			// Resources in a `defunct` state may not update their status
+			// right away when being destroyed, so wait a bit before failing
+			// the operation. Mirrors ManagedClusterWaitForState.
+			if time.Since(start).Seconds() > 30.0 {
 				return diag.Errorf(
 					"read-only replica set entered a defunct state while waiting for %q",
 					req.State,
 				)
 			}
-		} else {
-			defunctSince = time.Time{}
 		}
 
 		select {
 		case <-ctx.Done():
 			return diag.FromErr(ctx.Err())
-		case <-time.After(replicaSetPollInterval):
+		case <-ticker.C:
 		}
 	}
 }
