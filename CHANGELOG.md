@@ -1,3 +1,10 @@
+# Unreleased
+
+Changes:
+
+-   Add `kurrentcloud_managed_cluster_replicaset` resource for managing read-only replica sets attached to a managed cluster.
+
+
 # 1.5.29 (August 14 3, 2024)
 
 Changes:

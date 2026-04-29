@@ -89,6 +89,7 @@ func New(version string) func() *schema.Provider {
 				"kurrentcloud_network":                           resourceNetwork(),
 				"kurrentcloud_peering":                           resourcePeering(),
 				"kurrentcloud_managed_cluster":                   resourceManagedCluster(),
+				"kurrentcloud_managed_cluster_replicaset":        resourceManagedClusterReplicaset(),
 				"kurrentcloud_scheduled_backup":                  resourceScheduledBackup(),
 				"kurrentcloud_integration":                       resourceIntegration(),
 				"kurrentcloud_integration_awscloudwatch_logs":    resourceIntegrationAwsCloudWatchLogs(),

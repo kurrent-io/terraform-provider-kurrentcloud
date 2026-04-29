@@ -1,0 +1,32 @@
+---
+page_title: "Resource kurrentcloud_managed_cluster_replicaset - terraform-provider-kurrentcloud"
+subcategory: ""
+description: |-
+  Manages the read-only replica set attached to a Kurrent Cloud managed cluster.
+---
+
+{{/* This template serves as a starting point for documentation generation, and can be customized with hardcoded values and/or doc gen templates.
+
+For example, the {{ .SchemaMarkdown }} template can be used to replace manual schema documentation if descriptions of schema attributes are added in the provider source code. */ -}}
+
+# Resource (kurrentcloud_managed_cluster_replicaset)
+
+Manages the read-only replica set attached to a Kurrent Cloud managed cluster.
+
+The Kurrent Cloud API exposes at most one read-only replica set per cluster, so this resource is keyed by the parent cluster's ID. To work with replicas, configure a `kurrentcloud_managed_cluster` and reference its `id` from this resource's `cluster_id`.
+
+When `protected = true`, the API will reject deletion of the replica set; flip `protected` back to `false` and re-apply before destroying.
+
+## Example Usage
+
+{{tffile "examples/resources/kurrentcloud_managed_cluster_replicaset/example_1.tf"}}
+
+{{ .SchemaMarkdown | trimspace }}
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+terraform import kurrentcloud_managed_cluster_replicaset.example project_id:cluster_id
+```
