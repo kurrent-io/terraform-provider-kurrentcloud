@@ -76,11 +76,12 @@ func (c *Client) ManagedClusterExpandDisk(
 }
 
 type ManagedClusterUpdateRequest struct {
-	OrganizationID string
-	ProjectID      string
-	ClusterID      string
-	Description    string `json:"description"`
-	Protected      bool   `json:"protected"`
+	OrganizationID  string
+	ProjectID       string
+	ClusterID       string
+	Description     string `json:"description"`
+	Protected       bool   `json:"protected"`
+	ProjectionLevel string `json:"projectionLevel,omitempty"`
 }
 
 func (c *Client) ManagedClusterUpdate(
