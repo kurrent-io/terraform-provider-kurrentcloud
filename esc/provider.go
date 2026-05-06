@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
-	"github.com/kurrent-io/terraform-provider-kurrentcloud/client"
+	"github.com/kurrent-io/terraform-provider-kurrentcloud/v2/client"
 )
 
 var defaultTokenStore = filepath.Join(os.Getenv("HOME"), ".esctf", "tokens")

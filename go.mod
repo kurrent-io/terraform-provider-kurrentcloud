@@ -1,4 +1,4 @@
-module github.com/kurrent-io/terraform-provider-kurrentcloud
+module github.com/kurrent-io/terraform-provider-kurrentcloud/v2
 
 go 1.25.0
 

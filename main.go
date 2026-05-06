@@ -5,8 +5,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
 
-	"github.com/kurrent-io/terraform-provider-kurrentcloud/client"
-	"github.com/kurrent-io/terraform-provider-kurrentcloud/esc"
+	"github.com/kurrent-io/terraform-provider-kurrentcloud/v2/client"
+	"github.com/kurrent-io/terraform-provider-kurrentcloud/v2/esc"
 )
 
 // Run "go generate" to format example terraform files and generate the docs for the registry/website
