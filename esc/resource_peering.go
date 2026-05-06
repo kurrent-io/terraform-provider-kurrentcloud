@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 
-	"github.com/kurrent-io/terraform-provider-kurrentcloud/client"
+	"github.com/kurrent-io/terraform-provider-kurrentcloud/v2/client"
 )
 
 func resourcePeering() *schema.Resource {

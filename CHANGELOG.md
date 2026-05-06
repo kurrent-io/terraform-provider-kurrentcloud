@@ -1,3 +1,10 @@
+# 2.1.1 (May 6, 2026)
+
+Changes:
+
+-   Added v2 to the module path.
+
+
 # 2.1.0 (May 6, 2026)
 
 Changes:
