@@ -1,3 +1,10 @@
+# Unreleased
+
+Changes:
+
+-   **Breaking:** Removed support for AWS `gp2` disk type. The upstream Kurrent Cloud API no longer accepts `gp2`; existing clusters should migrate to `gp3` (which requires `disk_iops` and `disk_throughput`). Terraform configurations using `disk_type = "gp2"` will now fail validation locally.
+
+
 # 2.1.1 (May 6, 2026)
 
 Changes:

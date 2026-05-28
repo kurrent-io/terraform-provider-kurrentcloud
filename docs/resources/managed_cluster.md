@@ -83,7 +83,7 @@ Use only the following values as `disk_type`:
 |:-------------|:------------------|
 | Azure        | `premium-ssd-lrs` |
 | Google Cloud | `ssd`             |
-| AWS          | `gp2`, `gp3`      |
+| AWS          | `gp3`             |
 
 For `server_version`, use one of the available KurrentDB product versions:
 - `24.10`

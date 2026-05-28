@@ -169,6 +169,6 @@ var validProviders = []string{"aws", "gcp", "azure"}
 var (
 	validTopologies       = []string{"single-node", "three-node-multi-zone"}
 	validInstanceTypes    = []string{"F1", "C4", "M8", "M16", "M32", "M64", "M128"}
-	validDiskTypes        = []string{"GP2", "GP3", "SSD", "PREMIUM-SSD-LRS"}
+	validDiskTypes        = []string{"GP3", "SSD", "PREMIUM-SSD-LRS"}
 	validProjectionLevels = []string{"off", "system", "user"}
 )

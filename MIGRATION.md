@@ -197,9 +197,11 @@ resource "eventstorecloud_managed_cluster" "my_cluster" {
   project_id   = "my-project-id"
   network_id   = "my-network-id"
   instance_type = "F1"
-  disk_size    = 24
-  disk_type    = "GP2"
-  server_version = "22.10"
+  disk_size       = 24
+  disk_type       = "GP3"
+  disk_iops       = 3000
+  disk_throughput = 125
+  server_version  = "22.10"
 }
 ```
 
@@ -217,9 +219,11 @@ resource "kurrentcloud_managed_cluster" "my_cluster" {
   project_id   = "my-project-id"
   network_id   = "my-network-id"
   instance_type = "F1"
-  disk_size    = 24
-  disk_type    = "GP2"
-  server_version = "22.10"
+  disk_size       = 24
+  disk_type       = "GP3"
+  disk_iops       = 3000
+  disk_throughput = 125
+  server_version  = "22.10"
 }
 ```
 
@@ -262,9 +266,11 @@ resource "kurrentcloud_managed_cluster" "my_cluster" {
   project_id   = "my-project-id"
   network_id   = "my-network-id"
   instance_type = "F1"
-  disk_size    = 24
-  disk_type    = "GP2"
-  server_version = "22.10"
+  disk_size       = 24
+  disk_type       = "GP3"
+  disk_iops       = 3000
+  disk_throughput = 125
+  server_version  = "22.10"
 }
 ```
 
