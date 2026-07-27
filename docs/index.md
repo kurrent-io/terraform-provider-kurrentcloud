@@ -12,15 +12,21 @@ Use the navigation to the left to read about the available resources.
 
 ## Configuration
 
-The Kurrent Cloud provider must be configured with an access token, however there are several additional options which may be useful.
+The Kurrent Cloud provider supports two authentication methods:
+
+- **Service Account credentials (recommended for automation)** - set `client_id` and `client_secret` to the credentials of a Kurrent Cloud Service Account. The provider then obtains short-lived access tokens via the OAuth2 client-credentials grant, and `token` is not used.
+- **Refresh token** - set `token` to a personal refresh token. This is the legacy method; the token is bound to a user account.
 
 Provider configuration options are:
 
-- `token` - (`ESC_TOKEN` via the environment) - *Required* - a refresh token for Kurrent Cloud. This token can be created and displayed with the esc cli tool [esc cli](https://github.com/EventStore/esc), or via the "request refresh token" button on the [Authentification Tokens page](https://console.eventstore.cloud/authentication-tokens) in the console. The token id displayed in the cloud console is not a valid token.
+- `token` - (`ESC_TOKEN` via the environment) - *Required unless Service Account credentials are set* - a refresh token for Kurrent Cloud. This token can be created and displayed with the esc cli tool [esc cli](https://github.com/EventStore/esc), or via the "request refresh token" button on the [Authentification Tokens page](https://console.eventstore.cloud/authentication-tokens) in the console. The token id displayed in the cloud console is not a valid token.
 - `organization_id` - (`ESC_ORG_ID` via the environment) - *Required* - the identifier of the Kurrent Cloud organization into which to provision resources.
 
+- `client_id` - (`ESC_CLIENT_ID` via the environment) - *Optional* - the Service Account client id. Must be set together with `client_secret`.
+- `client_secret` - (`ESC_CLIENT_SECRET` via the environment) - *Optional* - the Service Account client secret. When both `client_id` and `client_secret` are set, Service Account authentication is used and takes priority over `token`. Service Account tokens are held in memory only and are never written to the token store.
 - `url` - (`ESC_URL` via the environment) - *Optional* - the URL of the Kurrent Cloud API. This defaults to the public cloud instance of Kurrent Cloud, but may be overridden to provision resources in another instance.
-- `token_store` - (`ESC_TOKEN_STORE` via the environment) - *Optional* - the location on the local filesystem of the token cache. This is shared with the Kurrent Cloud CLI.
+- `token_store` - (`ESC_TOKEN_STORE` via the environment) - *Optional* - the location on the local filesystem of the token cache. This is shared with the Kurrent Cloud CLI. Only used with refresh token authentication.
+- `identity_kit_url` - (`ESC_IDENTITY_KIT_URL` via the environment) - *Optional* - the base URL of the token endpoint used for Service Account authentication. You would normally not need to set it.
 
 ## Example Usage
 
@@ -49,6 +55,8 @@ provider "kurrentcloud" {
 ### Optional
 
 - **client_id** (String)
+- **client_secret** (String, Sensitive)
+- **identity_kit_url** (String)
 - **identity_provider_url** (String)
 - **organization_id** (String)
 - **token** (String, Sensitive)
