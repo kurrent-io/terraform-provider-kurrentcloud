@@ -24,9 +24,22 @@ type Config struct {
 	RefreshToken        string
 }
 
+// serviceAccountMode reports whether the config selects Service Account
+// (client-credentials) authentication, i.e. a client secret is present.
+func (config *Config) serviceAccountMode() bool {
+	return strings.TrimSpace(config.ClientSecret) != ""
+}
+
 func (config *Config) validate() error {
 	if strings.TrimSpace(config.URL) == "" {
 		return errors.New("URL is required")
+	}
+
+	// Service Account authentication is memory-only: it never reads or writes
+	// the on-disk token store, so don't require (or create) it. This keeps SA
+	// mode usable in environments with no writable filesystem.
+	if config.serviceAccountMode() {
+		return nil
 	}
 
 	if _, err := os.Stat(config.TokenStore); err != nil {

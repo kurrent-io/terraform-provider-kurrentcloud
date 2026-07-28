@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"path"
 	"time"
 
 	"github.com/lestrrat-go/jwx/jwa"
@@ -99,8 +100,10 @@ func (c *Client) serviceAccountToken(force bool) (*tokenData, error) {
 
 	log.Printf("[INFO] authenticating via service account client credentials (client_id=%s)", c.clientID)
 
+	// Append to the configured path rather than overwriting it, so a base URL
+	// carrying a path prefix (e.g. behind a reverse proxy) is preserved.
 	idpKitURL := *c.idpKitURL
-	idpKitURL.Path = "/oauth2/token"
+	idpKitURL.Path = path.Join(idpKitURL.Path, "oauth2/token")
 
 	form := url.Values{}
 	form.Set("grant_type", "client_credentials")

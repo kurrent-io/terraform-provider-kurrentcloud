@@ -1,13 +1,19 @@
 package client
 
 import (
+	"crypto/rand"
+	"crypto/rsa"
 	"encoding/base64"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/lestrrat-go/jwx/jwa"
+	"github.com/lestrrat-go/jwx/jwt"
 )
 
 // fakeJWT builds an unsigned JWT with the given expiry. The signature part is
@@ -172,6 +178,64 @@ func TestServiceAccountTokenRefetchesWhenExpired(t *testing.T) {
 
 	if hits != 2 {
 		t.Errorf("token endpoint hit %d times, want 2 (expired token must not be reused)", hits)
+	}
+}
+
+// unwritableStorePath returns a token-store path that os.MkdirAll cannot
+// create, because a regular file sits where a parent directory would need to
+// be (mkdir under a file yields ENOTDIR).
+func unwritableStorePath(t *testing.T) string {
+	t.Helper()
+
+	blocker := filepath.Join(t.TempDir(), "blocker")
+	if err := os.WriteFile(blocker, []byte("x"), 0o600); err != nil {
+		t.Fatalf("creating blocker file: %v", err)
+	}
+
+	return filepath.Join(blocker, "tokens")
+}
+
+// TestNewServiceAccountSkipsTokenStore proves SA mode is memory-only: New
+// succeeds even when the token store cannot be created, and no directory is
+// written. An empty token store path is also accepted.
+func TestNewServiceAccountSkipsTokenStore(t *testing.T) {
+	storePath := unwritableStorePath(t)
+
+	c, err := New(&Config{
+		URL:          "https://api.example.test",
+		ClientID:     "sa-client-id",
+		ClientSecret: "sa-client-secret",
+		TokenStore:   storePath,
+	})
+	if err != nil {
+		t.Fatalf("New rejected SA config over token store access: %v", err)
+	}
+	if _, statErr := os.Stat(storePath); statErr == nil {
+		t.Error("SA mode created the token store on disk; it must be memory-only")
+	}
+
+	// Empty token store must also be accepted in SA mode.
+	if _, err := New(&Config{
+		URL:          "https://api.example.test",
+		ClientID:     "sa-client-id",
+		ClientSecret: "sa-client-secret",
+	}); err != nil {
+		t.Fatalf("New rejected SA config with empty token store: %v", err)
+	}
+
+	_ = c
+}
+
+// TestNewLegacyStillValidatesTokenStore guards the refresh-token path: with no
+// client secret, an uncreatable token store is still a hard error.
+func TestNewLegacyStillValidatesTokenStore(t *testing.T) {
+	_, err := New(&Config{
+		URL:          "https://api.example.test",
+		RefreshToken: "legacy-refresh-token",
+		TokenStore:   unwritableStorePath(t),
+	})
+	if err == nil {
+		t.Fatal("New accepted an uncreatable token store in refresh-token mode, want error")
 	}
 }
 
@@ -472,6 +536,114 @@ func TestAccessTokenLegacyForceSkipsCache(t *testing.T) {
 	}
 	if lastForm["grant_type"] != "refresh_token" {
 		t.Errorf("grant_type = %q, want refresh_token", lastForm["grant_type"])
+	}
+}
+
+// signedJWT mints a JWT signed with a freshly generated RSA key (RS256) and
+// returns both the compact token and the private key used to sign it.
+func signedJWT(t *testing.T, exp time.Time) (string, *rsa.PrivateKey) {
+	t.Helper()
+
+	key, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		t.Fatalf("generating RSA key: %v", err)
+	}
+
+	tok := jwt.New()
+	if err := tok.Set(jwt.ExpirationKey, exp); err != nil {
+		t.Fatalf("setting exp: %v", err)
+	}
+
+	signed, err := jwt.Sign(tok, jwa.RS256, key)
+	if err != nil {
+		t.Fatalf("signing token: %v", err)
+	}
+
+	return string(signed), key
+}
+
+// TestServiceAccountTokenPreservesPathPrefix ensures the client-credentials
+// endpoint is built by appending to the configured identity_kit_url path, not
+// by overwriting it, so a base URL behind a reverse proxy path prefix works.
+func TestServiceAccountTokenPreservesPathPrefix(t *testing.T) {
+	validToken := fakeJWT(t, time.Now().Add(time.Hour))
+
+	var gotPath string
+
+	backend := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gotPath = r.URL.Path
+
+		w.Header().Set("Content-Type", "application/json")
+
+		err := json.NewEncoder(w).Encode(tokenData{
+			AccessToken: accessToken(validToken),
+			ExpiresIn:   86400,
+			TokenType:   "Bearer",
+		})
+		if err != nil {
+			t.Errorf("encoding token response: %v", err)
+		}
+	}))
+	defer backend.Close()
+
+	c, err := New(&Config{
+		URL:            "https://api.example.test",
+		IdentityKitURL: backend.URL + "/auth/kit",
+		ClientID:       "sa-client-id",
+		ClientSecret:   "sa-client-secret",
+		TokenStore:     t.TempDir(),
+	})
+	if err != nil {
+		t.Fatalf("New: %v", err)
+	}
+
+	if _, err := c.accessToken(false); err != nil {
+		t.Fatalf("accessToken: %v", err)
+	}
+
+	if gotPath != "/auth/kit/oauth2/token" {
+		t.Errorf("token endpoint path = %q, want /auth/kit/oauth2/token (prefix must be preserved)", gotPath)
+	}
+}
+
+// TestIsUsableIgnoresSignature is the living proof that isUsable performs no
+// signature verification. It signs a token with a real RSA key that the
+// provider has never seen, then asserts:
+//
+//  1. isUsable accepts the token despite the unknown signing key; and
+//  2. a genuine verifier rejects that same key — so the signature is real and
+//     enforceable, and isUsable's acceptance is a deliberate skip, not an
+//     accident of a degenerate signature.
+func TestIsUsableIgnoresSignature(t *testing.T) {
+	signed, signingKey := signedJWT(t, time.Now().Add(time.Hour))
+
+	if !accessToken(signed).isUsable() {
+		t.Fatal("isUsable rejected a non-expired token; it must accept regardless of signer")
+	}
+
+	// A real verifier keyed to a DIFFERENT public key must reject the token,
+	// proving the signature carries meaning that isUsable deliberately skips.
+	otherKey, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		t.Fatalf("generating second RSA key: %v", err)
+	}
+	if _, err := jwt.ParseString(signed, jwt.WithVerify(jwa.RS256, &otherKey.PublicKey)); err == nil {
+		t.Fatal("expected signature verification against the wrong key to fail")
+	}
+
+	// Sanity: the same verifier keyed to the correct public key accepts it.
+	if _, err := jwt.ParseString(signed, jwt.WithVerify(jwa.RS256, &signingKey.PublicKey)); err != nil {
+		t.Fatalf("signature verification against the correct key failed: %v", err)
+	}
+}
+
+// TestIsUsableRejectsSignedButExpired confirms isUsable still enforces expiry
+// even for a validly signed token — signature is skipped, claims are not.
+func TestIsUsableRejectsSignedButExpired(t *testing.T) {
+	signed, _ := signedJWT(t, time.Now().Add(-time.Hour))
+
+	if accessToken(signed).isUsable() {
+		t.Fatal("isUsable accepted an expired token")
 	}
 }
 
