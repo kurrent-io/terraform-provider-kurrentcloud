@@ -109,7 +109,7 @@ func New(opts *Config) (*Client, error) {
 
 	identityKitURL := opts.IdentityKitURL
 	if strings.TrimSpace(identityKitURL) == "" {
-		identityKitURL = "https://thorough-shelter-35.authkit.app"
+		identityKitURL = "https://auth.kurrent.io"
 	}
 	parsedIdentityKitURL, err := url.Parse(identityKitURL)
 	if err != nil {
