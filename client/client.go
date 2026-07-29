@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"sync"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 
@@ -16,14 +17,29 @@ import (
 type Config struct {
 	URL                 string
 	IdentityProviderURL string
+	IdentityKitURL      string
 	ClientID            string
+	ClientSecret        string
 	TokenStore          string
 	RefreshToken        string
+}
+
+// serviceAccountMode reports whether the config selects Service Account
+// (client-credentials) authentication, i.e. a client secret is present.
+func (config *Config) serviceAccountMode() bool {
+	return strings.TrimSpace(config.ClientSecret) != ""
 }
 
 func (config *Config) validate() error {
 	if strings.TrimSpace(config.URL) == "" {
 		return errors.New("URL is required")
+	}
+
+	// Service Account authentication is memory-only: it never reads or writes
+	// the on-disk token store, so don't require (or create) it. This keeps SA
+	// mode usable in environments with no writable filesystem.
+	if config.serviceAccountMode() {
+		return nil
 	}
 
 	if _, err := os.Stat(config.TokenStore); err != nil {
@@ -47,9 +63,16 @@ type Client struct {
 
 	audience     string
 	idpURL       *url.URL
+	idpKitURL    *url.URL
 	tokenStore   *tokenStore
 	clientID     string
+	clientSecret string
 	refreshToken string
+
+	// saTokenMu guards saToken. Service Account tokens are cached in memory
+	// only and are never written to the on-disk token store.
+	saTokenMu sync.Mutex
+	saToken   *tokenData
 
 	httpClient *http.Client
 }
@@ -57,6 +80,13 @@ type Client struct {
 func New(opts *Config) (*Client, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
+	}
+
+	// Service Account authentication requires both halves of the credential
+	// pair; a secret without an explicit client id would otherwise silently
+	// fall back to the default interactive client id.
+	if strings.TrimSpace(opts.ClientSecret) != "" && strings.TrimSpace(opts.ClientID) == "" {
+		return nil, errors.New("client_id and client_secret must both be set for service account authentication")
 	}
 
 	tokenStore := &tokenStore{
@@ -77,6 +107,15 @@ func New(opts *Config) (*Client, error) {
 		return nil, fmt.Errorf("invalid identity provider URL: %q, %w", identityProviderURL, err)
 	}
 
+	identityKitURL := opts.IdentityKitURL
+	if strings.TrimSpace(identityKitURL) == "" {
+		identityKitURL = "https://auth.kurrent.io"
+	}
+	parsedIdentityKitURL, err := url.Parse(identityKitURL)
+	if err != nil {
+		return nil, fmt.Errorf("invalid identity kit URL: %q, %w", identityKitURL, err)
+	}
+
 	clientID := opts.ClientID
 	if strings.TrimSpace(clientID) == "" {
 		clientID = "OraYp3cFES9O8aWuQtnqi1A7m534iTwt"
@@ -86,7 +125,9 @@ func New(opts *Config) (*Client, error) {
 		apiURL:       apiURL,
 		audience:     "api.eventstore.cloud",
 		idpURL:       parsedIdentityProviderURL,
+		idpKitURL:    parsedIdentityKitURL,
 		clientID:     clientID,
+		clientSecret: strings.TrimSpace(opts.ClientSecret),
 		tokenStore:   tokenStore,
 		refreshToken: opts.RefreshToken,
 		httpClient:   newHTTPClientWithUserAgent(cleanhttp.DefaultClient()),

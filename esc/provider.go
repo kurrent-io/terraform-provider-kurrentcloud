@@ -71,6 +71,19 @@ func New(version string) func() *schema.Provider {
 					Required:    true,
 					DefaultFunc: schema.EnvDefaultFunc("ESC_CLIENT_ID", ""),
 				},
+
+				"client_secret": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					DefaultFunc: schema.EnvDefaultFunc("ESC_CLIENT_SECRET", ""),
+					Sensitive:   true,
+				},
+
+				"identity_kit_url": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					DefaultFunc: schema.EnvDefaultFunc("ESC_IDENTITY_KIT_URL", ""),
+				},
 			},
 
 			DataSourcesMap: map[string]*schema.Resource{
@@ -143,7 +156,9 @@ func configure(
 			RefreshToken:        d.Get("token").(string),
 			TokenStore:          d.Get("token_store").(string),
 			IdentityProviderURL: d.Get("identity_provider_url").(string),
+			IdentityKitURL:      d.Get("identity_kit_url").(string),
 			ClientID:            d.Get("client_id").(string),
+			ClientSecret:        d.Get("client_secret").(string),
 		}
 
 		c, err := client.New(config)

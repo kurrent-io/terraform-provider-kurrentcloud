@@ -2,6 +2,8 @@
 
 Changes:
 
+-   Added Service Account authentication via the OAuth2 client-credentials grant. Set `client_id` and `client_secret` (or `ESC_CLIENT_ID` / `ESC_CLIENT_SECRET`) to authenticate as a Service Account; this takes priority over the `token` refresh-token flow. Service Account tokens are cached in memory only and are never written to the on-disk token store.
+-   Fixed a response-body leak: `closeIgnoreError` returned a closure that deferred call sites never invoked, so HTTP response bodies were never closed.
 -   **Breaking:** Removed support for AWS `gp2` disk type. The upstream Kurrent Cloud API no longer accepts `gp2`; existing clusters should migrate to `gp3` (which requires `disk_iops` and `disk_throughput`). Terraform configurations using `disk_type = "gp2"` will now fail validation locally.
 
 
